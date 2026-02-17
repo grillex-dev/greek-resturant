@@ -1,0 +1,52 @@
+version: "3.9"
+
+services:
+
+  postgres:
+    image: postgres:15
+    container_name: restaurant-postgres
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - appnet
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
+    ports:
+      - "5050:80"
+    networks:
+      - appnet
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: restaurant-api
+    depends_on:
+      - postgres
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      DATABASE_URL: ${DATABASE_URL}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      APP_PORT: ${APP_PORT}
+    ports:
+      - "${APP_PORT}:${APP_PORT}"
+    networks:
+      - appnet
+
+networks:
+  appnet:
+    driver: bridge
+
+volumes:
+  pgdata:
