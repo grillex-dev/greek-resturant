@@ -17,8 +17,11 @@ enum UserRole {
 
 enum OrderStatus {
   PENDING
-  PAID
-  FAILED
+  CONFIRMED
+  PREPARING
+  READY
+  OUT_FOR_DELIVERY
+  COMPLETED
   CANCELLED
 }
 
@@ -54,9 +57,45 @@ model User {
 //////////////////////////////////////////////////////
 
 model Restaurant {
-  id        String   @id @default(uuid())
-  name      String
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  phone       String?
+  email       String?
+  address     String?
+  city        String?
+  state       String?
+  zipCode     String?
+  country     String?
+  logoUrl     String?
+  coverImageUrl String?
+  
+  // Business hours (stored as JSON or separate fields)
+  mondayOpen    String?
+  mondayClose   String?
+  tuesdayOpen   String?
+  tuesdayClose  String?
+  wednesdayOpen String?
+  wednesdayClose String?
+  thursdayOpen  String?
+  thursdayClose String?
+  fridayOpen    String?
+  fridayClose   String?
+  saturdayOpen  String?
+  saturdayClose String?
+  sundayOpen    String?
+  sundayClose   String?
+  
+  // Delivery settings
+  deliveryEnabled Boolean @default(false)
+  deliveryFee     Decimal? @db.Decimal(10,2)
+  minOrderAmount  Decimal? @db.Decimal(10,2)
+  
+  // Tax settings
+  taxRate Decimal? @db.Decimal(5,2)
+  
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   categories Category[]
   products   Product[]

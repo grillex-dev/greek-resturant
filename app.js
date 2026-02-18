@@ -3,6 +3,15 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import homeRoutes from "./modules/home/home.router.js";
 import authRoutes from "./modules/auth/auth.router.js";
+import categoryRoutes from "./modules/categories/category.router.js";
+import productRoutes from "./modules/products/product.router.js";
+import cartRoutes from "./modules/cart/cart.router.js";
+import orderRoutes from "./modules/orders/order.router.js";
+import tableRoutes from "./modules/tables/table.router.js";
+import userRoutes from "./modules/users/user.router.js";
+import adminUserRoutes from "./modules/admin-users/admin-user.router.js";
+import customizationRoutes from "./modules/customizations/customization.router.js";
+import restaurantRoutes from "./modules/restaurant/restaurant.router.js";
 
 const app = express();
 
@@ -34,5 +43,14 @@ app.use(cookieParser());
 // Routes
 app.use("/", homeRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/categories", categoryRoutes);
+app.use("/api/products", productRoutes);
+app.use("/api/cart", cartRoutes);
+app.use("/api/orders", orderRoutes);
+app.use("/api/tables", tableRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/admin/users", adminUserRoutes);
+app.use("/api/customizations", customizationRoutes);
+app.use("/api/restaurants", restaurantRoutes);
 
 export default app;
