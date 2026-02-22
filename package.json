@@ -10,7 +10,14 @@
     "test:connections": "node test-connections.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
-    "prisma:studio": "prisma studio"
+    "prisma:studio": "prisma studio",
+    "prisma:seed": "prisma db seed",
+    "prisma:seed:docker": "docker compose exec api node prisma/seed.js",
+    "prisma:push:docker": "docker compose exec api npx prisma db push",
+    "prisma:setup:docker": "docker compose exec api sh -c \"npx prisma db push && node prisma/seed.js\""
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
   },
   "repository": {
     "type": "git",
@@ -31,5 +38,6 @@
     "jsonwebtoken": "^9.0.2",
     "pg": "^8.11.3",
     "postgres": "^3.4.3"
-  }
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }

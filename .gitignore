@@ -7,9 +7,6 @@ jspm_packages/
 # ----------------------
 # Environment variables
 # ----------------------
-.env
-.env.*
-!.env.example
 
 # ----------------------
 # Logs
