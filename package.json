@@ -10,7 +10,14 @@
     "test:connections": "node test-connections.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
-    "prisma:studio": "prisma studio"
+    "prisma:studio": "prisma studio",
+    "prisma:seed": "prisma db seed",
+    "prisma:seed:docker": "docker compose exec api node prisma/seed.js",
+    "prisma:push:docker": "docker compose exec api npx prisma db push",
+    "prisma:setup:docker": "docker compose exec api sh -c \"npx prisma db push && node prisma/seed.js\""
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
   },
   "repository": {
     "type": "git",

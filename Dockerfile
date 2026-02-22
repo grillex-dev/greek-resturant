@@ -7,8 +7,8 @@ RUN npm install --production
 
 COPY . .
 
-RUN npx prisma generate
+RUN node node_modules/prisma/build/index.js generate
 
 EXPOSE ${APP_PORT}
 
-CMD ["node", "dist/main.js"]
+CMD ["npm", "start"]

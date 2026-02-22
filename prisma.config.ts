@@ -11,8 +11,10 @@ dotenv.config({ path: path.resolve(__dirname, "./.env") });
 
 export default defineConfig({
   schema: "prisma/schema.prisma",
+  migrations: {
+    seed: "node prisma/seed.js" as const,
+  },
   datasource: {
     url: process.env.DATABASE_URL || process.env.DIRECT_URL,
   },
 });
-
