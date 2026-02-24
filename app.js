@@ -15,13 +15,20 @@ import restaurantRoutes from "./modules/restaurant/restaurant.router.js";
 
 const app = express();
 
+const allowedOrigins = ["http://localhost:3000", "http://104.207.66.112:3000"];
+
 app.use(
   cors({
-    origin: "*",
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, origin);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
-    optionsSuccessStatus: 204,
   }),
 );
 
