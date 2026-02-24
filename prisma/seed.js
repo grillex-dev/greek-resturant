@@ -5,6 +5,8 @@ import bcrypt from "bcrypt";
 const SALT_ROUNDS = 10;
 const DEFAULT_USER_EMAIL = "customer@test.com";
 const DEFAULT_USER_PASSWORD = "password123";
+const DEFAULT_ADMIN_EMAIL = "admin@admin.com";
+const DEFAULT_ADMIN_PASSWORD = "123456";
 const RESTAURANT_NAME = "Greek Restaurant";
 
 async function main() {
@@ -132,6 +134,28 @@ async function main() {
     console.log("Created default user:", DEFAULT_USER_EMAIL);
   } else {
     console.log("Default user already exists:", DEFAULT_USER_EMAIL);
+  }
+
+  // Default ADMIN user (idempotent)
+  const existingAdmin = await prisma.user.findUnique({
+    where: { email: DEFAULT_ADMIN_EMAIL },
+  });
+  if (!existingAdmin) {
+    const hashedAdminPassword = await bcrypt.hash(
+      DEFAULT_ADMIN_PASSWORD,
+      SALT_ROUNDS,
+    );
+    await prisma.user.create({
+      data: {
+        name: "Admin",
+        email: DEFAULT_ADMIN_EMAIL,
+        password: hashedAdminPassword,
+        role: "ADMIN",
+      },
+    });
+    console.log("Created default admin:", DEFAULT_ADMIN_EMAIL);
+  } else {
+    console.log("Default admin already exists:", DEFAULT_ADMIN_EMAIL);
   }
 }
 
