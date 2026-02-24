@@ -42,6 +42,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+
+
+
 // Routes
 app.use("/", homeRoutes);
 app.use("/api/auth", authRoutes);
