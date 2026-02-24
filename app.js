@@ -17,12 +17,15 @@ const app = express();
 
 app.use(
   cors({
-    origin: true,
+    origin: "*",
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
+    optionsSuccessStatus: 204,
   }),
 );
+
+app.options("*", cors());
 
 app.get("/debug-env", (req, res) => {
   res.json({
@@ -41,9 +44,6 @@ app.get("/debug-env", (req, res) => {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-
-
-
 
 // Routes
 app.use("/", homeRoutes);
