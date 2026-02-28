@@ -105,9 +105,7 @@ export const createOrder = async (req, res) => {
       error.message === "Valid fulfillment type is required" ||
       error.message === "Cart is empty" ||
       error.message === "Delivery address and phone number are required" ||
-      error.message === "Pickup time is required" ||
-      error.message === "Table selection is required for dine-in" ||
-      error.message === "Reservation time is required"
+      error.message === "Pickup time is required"
     ) {
       return res.status(400).json({
         success: false,

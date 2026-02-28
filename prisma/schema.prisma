@@ -139,12 +139,13 @@ model Category {
 //////////////////////////////////////////////////////
 
 model Product {
-  id           String   @id @default(uuid())
-  name         String
-  description  String?
-  basePrice    Decimal  @db.Decimal(10,2)
-  imageUrl     String?
-  isActive     Boolean  @default(true)
+  id             String   @id @default(uuid())
+  name           String
+  description    String?
+  basePrice      Decimal  @db.Decimal(10,2)
+  imageUrl       String?
+  imagePublicId  String?
+  isActive       Boolean  @default(true)
 
   category     Category @relation(fields: [categoryId], references: [id])
   categoryId   String
@@ -231,6 +232,8 @@ model CartItem {
 
   basePriceSnapshot  Decimal @db.Decimal(10,2)
   finalPriceSnapshot Decimal @db.Decimal(10,2)
+
+  note         String?
 
   customizations CartItemCustomization[]
 
@@ -328,6 +331,8 @@ model OrderItem {
 
   basePriceSnapshot  Decimal @db.Decimal(10,2)
   finalPriceSnapshot Decimal @db.Decimal(10,2)
+
+  note         String?
 
   customizations OrderItemCustomization[]
 }

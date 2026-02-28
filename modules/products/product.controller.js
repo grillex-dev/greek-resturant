@@ -1,5 +1,24 @@
 // modules/products/product.controller.js
 import * as productService from "./product.service.js";
+import { uploadFromBuffer, destroy } from "../../config/cloudinary.js";
+
+/**
+ * Parse body for multipart (componentIds, extraIds as comma-separated strings)
+ */
+const parseProductBody = (body) => {
+  const data = { ...body };
+  if (typeof data.componentIds === "string") {
+    data.componentIds = data.componentIds
+      ? data.componentIds.split(",").map((id) => id.trim()).filter(Boolean)
+      : [];
+  }
+  if (typeof data.extraIds === "string") {
+    data.extraIds = data.extraIds
+      ? data.extraIds.split(",").map((id) => id.trim()).filter(Boolean)
+      : [];
+  }
+  return data;
+};
 
 /**
  * Get all products
@@ -86,7 +105,8 @@ export const createProduct = async (req, res) => {
       error.message === "Product name is required" ||
       error.message === "Valid base price is required" ||
       error.message === "Category ID is required" ||
-      error.message === "Restaurant ID is required"
+      error.message === "Restaurant ID is required" ||
+      error.message?.startsWith("Cloudinary")
     ) {
       return res.status(400).json({
         success: false,
@@ -116,7 +136,25 @@ export const createProduct = async (req, res) => {
 export const updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const product = await productService.updateProduct(id, req.body);
+    let body = parseProductBody(req.body);
+
+    if (req.file) {
+      const existingProduct = await productService.getProductById(id);
+      if (existingProduct?.imagePublicId) {
+        try {
+          await destroy(existingProduct.imagePublicId);
+        } catch (err) {
+          console.warn("Cloudinary destroy failed:", err.message);
+        }
+      }
+      const result = await uploadFromBuffer(req.file.buffer, {
+        folder: "greek-restaurant/products",
+      });
+      body.imageUrl = result.secure_url;
+      body.imagePublicId = result.public_id;
+    }
+
+    const product = await productService.updateProduct(id, body);
 
     return res.status(200).json({
       success: true,
@@ -136,7 +174,8 @@ export const updateProduct = async (req, res) => {
 
     if (
       error.message === "Product name cannot be empty" ||
-      error.message === "Invalid base price"
+      error.message === "Invalid base price" ||
+      error.message?.startsWith("Cloudinary")
     ) {
       return res.status(400).json({
         success: false,

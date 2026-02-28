@@ -37,7 +37,7 @@ export const getCart = async (userId) => {
  * @returns {Promise<object>} Created cart item
  */
 export const addToCart = async (data) => {
-  const { userId, productId, quantity = 1, customizations = [] } = data;
+  const { userId, productId, quantity = 1, customizations = [], note } = data;
 
   // Validate inputs
   if (!userId) {
@@ -125,6 +125,7 @@ export const addToCart = async (data) => {
       quantity,
       basePriceSnapshot: basePrice,
       finalPriceSnapshot: finalPrice,
+      note: note?.trim() || null,
       customizations: processedCustomizations.length
         ? {
             create: processedCustomizations,
@@ -147,14 +148,18 @@ export const addToCart = async (data) => {
 };
 
 /**
- * Update cart item quantity
+ * Update cart item quantity and/or note
  * @param {string} cartItemId - Cart item ID
  * @param {string} userId - User ID
- * @param {number} quantity - New quantity
+ * @param {object} updates - Updates to apply
+ * @param {number} updates.quantity - New quantity
+ * @param {string} [updates.note] - Optional note
  * @returns {Promise<object>} Updated cart item
  */
-export const updateCartItemQuantity = async (cartItemId, userId, quantity) => {
-  if (quantity < 1) {
+export const updateCartItemQuantity = async (cartItemId, userId, updates) => {
+  const { quantity, note } = updates;
+
+  if (quantity !== undefined && quantity < 1) {
     throw new Error("Quantity must be at least 1");
   }
 
@@ -167,9 +172,13 @@ export const updateCartItemQuantity = async (cartItemId, userId, quantity) => {
     throw new Error("Cart item not found");
   }
 
+  const data = {};
+  if (quantity !== undefined) data.quantity = quantity;
+  if (note !== undefined) data.note = note?.trim() || null;
+
   const cartItem = await prisma.cartItem.update({
     where: { id: cartItemId },
-    data: { quantity },
+    data,
     include: {
       product: {
         select: {
@@ -201,6 +210,10 @@ export const removeFromCart = async (cartItemId, userId) => {
     throw new Error("Cart item not found");
   }
 
+  // Delete customizations first (child records) to satisfy FK constraint
+  await prisma.cartItemCustomization.deleteMany({
+    where: { cartItemId },
+  });
   await prisma.cartItem.delete({
     where: { id: cartItemId },
   });
@@ -214,6 +227,12 @@ export const removeFromCart = async (cartItemId, userId) => {
  * @returns {Promise<object>} Success message
  */
 export const clearCart = async (userId) => {
+  // Delete customizations first (child records) to satisfy FK constraint
+  await prisma.cartItemCustomization.deleteMany({
+    where: {
+      cartItem: { userId },
+    },
+  });
   await prisma.cartItem.deleteMany({
     where: { userId },
   });

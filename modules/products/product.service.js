@@ -102,6 +102,7 @@ export const createProduct = async (data) => {
     description,
     basePrice,
     imageUrl,
+    imagePublicId,
     categoryId,
     restaurantId,
     componentIds,
@@ -140,6 +141,7 @@ export const createProduct = async (data) => {
       description: description?.trim(),
       basePrice: parseFloat(basePrice),
       imageUrl,
+      imagePublicId,
       categoryId,
       restaurantId,
       components: componentIds?.length
@@ -179,6 +181,7 @@ export const updateProduct = async (id, data) => {
     description,
     basePrice,
     imageUrl,
+    imagePublicId,
     categoryId,
     isActive,
     componentIds,
@@ -216,6 +219,10 @@ export const updateProduct = async (id, data) => {
 
   if (imageUrl !== undefined) {
     updateData.imageUrl = imageUrl;
+  }
+
+  if (imagePublicId !== undefined) {
+    updateData.imagePublicId = imagePublicId;
   }
 
   if (categoryId !== undefined) {

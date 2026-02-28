@@ -35,13 +35,14 @@ export const getCart = async (req, res) => {
 export const addToCart = async (req, res) => {
   try {
     const userId = req.userId;
-    const { productId, quantity, customizations } = req.body;
+    const { productId, quantity, customizations, note } = req.body;
 
     const cartItem = await cartService.addToCart({
       userId,
       productId,
       quantity,
       customizations,
+      note,
     });
 
     return res.status(201).json({
@@ -95,9 +96,12 @@ export const updateCartItemQuantity = async (req, res) => {
   try {
     const userId = req.userId;
     const { id } = req.params;
-    const { quantity } = req.body;
+    const { quantity, note } = req.body;
 
-    const cartItem = await cartService.updateCartItemQuantity(id, userId, quantity);
+    const cartItem = await cartService.updateCartItemQuantity(id, userId, {
+      quantity,
+      note,
+    });
 
     return res.status(200).json({
       success: true,

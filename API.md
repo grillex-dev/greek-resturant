@@ -247,17 +247,17 @@ All auth endpoints use **Headers:** `Content-Type: application/json`. No cookie 
 ### POST `/api/products`
 
 **Auth:** Admin  
-**Headers:** `Content-Type: application/json`  
+**Headers:** Either `Content-Type: application/json` (JSON) or `Content-Type: multipart/form-data` (file upload)  
 **Query:** None
 
-**Body (required):**
+**Body (JSON, required):**
 
 ```json
 {
   "name": "string (required)",
   "description": "string (optional)",
   "basePrice": "number or string (required)",
-  "imageUrl": "string (optional)",
+  "imageUrl": "string (optional, external URL)",
   "categoryId": "string (required, UUID)",
   "restaurantId": "string (required, UUID)",
   "componentIds": "string[] (optional)",
@@ -265,20 +265,22 @@ All auth endpoints use **Headers:** `Content-Type: application/json`. No cookie 
 }
 ```
 
+**Body (multipart/form-data):** Form fields `name`, `description`, `basePrice`, `categoryId`, `restaurantId`, `componentIds` (comma-separated), `extraIds` (comma-separated); file field `image` (optional, JPEG/PNG/WebP/GIF, max 5MB). Image is uploaded to Cloudinary.
+
 **Success:** `201` — `{ "success": true, "message": "Product created successfully", "data": { ... } }`.  
-**Errors:** `400` missing/invalid fields; `404` category not found.
+**Errors:** `400` missing/invalid fields, invalid file type, file too large; `404` category not found.
 
 ---
 
 ### PUT `/api/products/:id`
 
 **Auth:** Admin  
-**Headers:** `Content-Type: application/json`  
+**Headers:** Either `Content-Type: application/json` (JSON) or `Content-Type: multipart/form-data` (file upload)  
 **Query:** None
 
 **Params:** `id` — Product UUID.
 
-**Body (all optional):**
+**Body (JSON, all optional):**
 
 ```json
 {
@@ -293,8 +295,10 @@ All auth endpoints use **Headers:** `Content-Type: application/json`. No cookie 
 }
 ```
 
+**Body (multipart/form-data):** Same form fields; file field `image` (optional). Replacing the image uploads to Cloudinary and removes the previous Cloudinary image.
+
 **Success:** `200` — `{ "success": true, "message": "Product updated successfully", "data": { ... } }`.  
-**Errors:** `400` invalid data; `404` product or category not found.
+**Errors:** `400` invalid data, invalid file type, file too large; `404` product or category not found.
 
 ---
 
@@ -464,15 +468,15 @@ All cart routes require **Auth:** Cookie `auth_token` (any authenticated user).
     "state": "string (optional)",
     "locationNote": "string (optional)",
     "pickupTime": "string ISO date (required for PICKUP)",
-    "reservationTime": "string ISO date (required for DINE_IN)",
-    "tableId": "string UUID (required for DINE_IN)"
+    "reservationTime": "string ISO date (optional for DINE_IN)",
+    "tableId": "string UUID (optional for DINE_IN)"
   }
 }
 ```
 
 - **DELIVERY:** `street` and `phoneNumber` required.
 - **PICKUP:** `pickupTime` required.
-- **DINE_IN:** `tableId` and `reservationTime` required.
+- **DINE_IN:** `tableId` and `reservationTime` optional.
 
 Cart must not be empty; cart is cleared on success.
 

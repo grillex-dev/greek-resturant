@@ -161,13 +161,6 @@ export const createOrder = async (data) => {
     if (!fulfillmentDetails?.pickupTime) {
       throw new Error("Pickup time is required");
     }
-  } else if (fulfillmentType === "DINE_IN") {
-    if (!fulfillmentDetails?.tableId) {
-      throw new Error("Table selection is required for dine-in");
-    }
-    if (!fulfillmentDetails?.reservationTime) {
-      throw new Error("Reservation time is required");
-    }
   }
 
   // Create order with items
@@ -185,6 +178,7 @@ export const createOrder = async (data) => {
           quantity: item.quantity,
           basePriceSnapshot: item.basePriceSnapshot,
           finalPriceSnapshot: item.finalPriceSnapshot,
+          note: item.note || null,
           customizations: item.customizations?.length
             ? {
                 create: item.customizations.map((customization) => ({
