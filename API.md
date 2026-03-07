@@ -265,7 +265,7 @@ All auth endpoints use **Headers:** `Content-Type: application/json`. No cookie 
 }
 ```
 
-**Body (multipart/form-data):** Form fields `name`, `description`, `basePrice`, `categoryId`, `restaurantId`, `componentIds` (comma-separated), `extraIds` (comma-separated); file field `image` (optional, JPEG/PNG/WebP/GIF, max 5MB). Image is uploaded to Cloudinary.
+**Body (multipart/form-data):** Form fields `name`, `description`, `basePrice`, `categoryId`, `restaurantId`, `componentIds` (comma-separated), `extraIds` (comma-separated); file field `image` (optional, JPEG/PNG/WebP/GIF, max 5MB). Image is saved to server; `imageUrl` is set to `/uploads/products/{filename}`.
 
 **Success:** `201` — `{ "success": true, "message": "Product created successfully", "data": { ... } }`.  
 **Errors:** `400` missing/invalid fields, invalid file type, file too large; `404` category not found.
@@ -295,7 +295,7 @@ All auth endpoints use **Headers:** `Content-Type: application/json`. No cookie 
 }
 ```
 
-**Body (multipart/form-data):** Same form fields; file field `image` (optional). Replacing the image uploads to Cloudinary and removes the previous Cloudinary image.
+**Body (multipart/form-data):** Same form fields; file field `image` (optional). Replacing the image saves to server and removes the previous image file.
 
 **Success:** `200` — `{ "success": true, "message": "Product updated successfully", "data": { ... } }`.  
 **Errors:** `400` invalid data, invalid file type, file too large; `404` product or category not found.

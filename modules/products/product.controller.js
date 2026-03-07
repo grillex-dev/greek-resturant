@@ -1,6 +1,7 @@
 // modules/products/product.controller.js
+import fs from "fs";
+import path from "path";
 import * as productService from "./product.service.js";
-import { uploadFromBuffer, destroy } from "../../config/cloudinary.js";
 
 /**
  * Parse body for multipart (componentIds, extraIds as comma-separated strings)
@@ -94,6 +95,10 @@ export const getProductById = async (req, res) => {
 export const createProduct = async (req, res) => {
   try {
     const body = parseProductBody(req.body);
+    if (req.file) {
+      body.imageUrl = `/uploads/products/${req.file.filename}`;
+      body.imagePublicId = req.file.filename;
+    }
     const product = await productService.createProduct(body);
 
     return res.status(201).json({
@@ -142,17 +147,15 @@ export const updateProduct = async (req, res) => {
     if (req.file) {
       const existingProduct = await productService.getProductById(id);
       if (existingProduct?.imagePublicId) {
+        const oldPath = path.join(process.cwd(), "uploads", "products", existingProduct.imagePublicId);
         try {
-          await destroy(existingProduct.imagePublicId);
+          fs.unlinkSync(oldPath);
         } catch (err) {
-          console.warn("Cloudinary destroy failed:", err.message);
+          console.warn("Failed to delete old image:", err.message);
         }
       }
-      const result = await uploadFromBuffer(req.file.buffer, {
-        folder: "greek-restaurant/products",
-      });
-      body.imageUrl = result.secure_url;
-      body.imagePublicId = result.public_id;
+      body.imageUrl = "/uploads/products/" + req.file.filename;
+      body.imagePublicId = req.file.filename;
     }
 
     const product = await productService.updateProduct(id, body);

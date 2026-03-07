@@ -1,9 +1,25 @@
 // config/upload.js
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 import multer from "multer";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const ALLOWED_MIMES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 
-const storage = multer.memoryStorage();
+const uploadsDir = path.join(process.cwd(), "uploads", "products");
+fs.mkdirSync(uploadsDir, { recursive: true });
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, uploadsDir),
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname) || ".jpg";
+    const uniqueName = `${Date.now()}-${Math.random().toString(36).slice(2, 9)}${ext}`;
+    cb(null, uniqueName);
+  },
+});
 
 const fileFilter = (req, file, cb) => {
   if (ALLOWED_MIMES.includes(file.mimetype)) {

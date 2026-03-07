@@ -38,6 +38,8 @@ services:
       APP_PORT: ${APP_PORT}
     ports:
       - "${APP_PORT}:${APP_PORT}"
+    volumes:
+      - uploads_data:/app/uploads
     networks:
       - appnet
 
@@ -47,3 +49,4 @@ networks:
 
 volumes:
   pgdata:
+  uploads_data:

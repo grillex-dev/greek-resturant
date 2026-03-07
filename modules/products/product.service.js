@@ -1,4 +1,6 @@
 // modules/products/product.service.js
+import fs from "fs";
+import path from "path";
 import prisma from "../../config/prisma.js";
 
 /**
@@ -319,7 +321,16 @@ export const deleteProduct = async (id) => {
     return { ...product, softDeleted: true };
   }
 
-  // Hard delete if no orders
+  // Hard delete if no orders - delete local image file if it exists
+  if (existingProduct.imagePublicId) {
+    try {
+      const filePath = path.join(process.cwd(), "uploads", "products", existingProduct.imagePublicId);
+      if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+    } catch (err) {
+      console.warn("Failed to delete product image file:", err.message);
+    }
+  }
+
   const product = await prisma.product.delete({
     where: { id },
   });

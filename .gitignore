@@ -53,6 +53,11 @@ temp/
 *.sqlite3
 
 # ----------------------
+# Uploaded files
+# ----------------------
+uploads/
+
+# ----------------------
 # Docker
 # ----------------------
 docker-compose.override.yml
