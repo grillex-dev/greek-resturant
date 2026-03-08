@@ -109,15 +109,6 @@ export const createProduct = async (data) => {
     extraIds,
   } = data;
 
-  const toIdArray = (val) => {
-    if (Array.isArray(val)) return val;
-    if (val == null || val === "") return [];
-    if (typeof val === "string") return val.split(",").map((s) => s.trim()).filter(Boolean);
-    return [String(val)];
-  };
-  const componentIdsArr = toIdArray(componentIds);
-  const extraIdsArr = toIdArray(extraIds);
-
   // Validate required fields
   if (!name || name.trim().length === 0) {
     throw new Error("Product name is required");
@@ -153,16 +144,16 @@ export const createProduct = async (data) => {
       imagePublicId,
       categoryId,
       restaurantId,
-      components: componentIdsArr.length
+      components: componentIds?.length
         ? {
-            create: componentIdsArr.map((componentId) => ({
+            create: componentIds.map((componentId) => ({
               component: { connect: { id: componentId } },
             })),
           }
         : undefined,
-      extras: extraIdsArr.length
+      extras: extraIds?.length
         ? {
-            create: extraIdsArr.map((extraId) => ({
+            create: extraIds.map((extraId) => ({
               extra: { connect: { id: extraId } },
             })),
           }

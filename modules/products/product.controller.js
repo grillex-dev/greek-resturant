@@ -93,8 +93,7 @@ export const getProductById = async (req, res) => {
  */
 export const createProduct = async (req, res) => {
   try {
-    const body = parseProductBody(req.body);
-    const product = await productService.createProduct(body);
+    const product = await productService.createProduct(req.body);
 
     return res.status(201).json({
       success: true,
