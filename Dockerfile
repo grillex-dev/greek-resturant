@@ -9,6 +9,7 @@ COPY . .
 
 RUN node node_modules/prisma/build/index.js generate
 
-EXPOSE ${APP_PORT}
+ARG APP_PORT=5000
+EXPOSE $APP_PORT
 
 CMD ["npm", "start"]
