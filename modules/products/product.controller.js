@@ -87,14 +87,17 @@ export const getProductById = async (req, res) => {
   }
 };
 
-/**
- * Create new product (Admin only)
- * POST /api/products
- */
+
 export const createProduct = async (req, res) => {
   try {
-    const product = await productService.createProduct(req.body);
-
+    const { imageUrl, imagePublicId } = req.uploadedImage ?? {};
+ 
+    const product = await productService.createProduct({
+      ...req.body,
+      imageUrl,
+      imagePublicId,
+    });
+ 
     return res.status(201).json({
       success: true,
       message: "Product created successfully",
@@ -106,56 +109,34 @@ export const createProduct = async (req, res) => {
       error.message === "Valid base price is required" ||
       error.message === "Category ID is required" ||
       error.message === "Restaurant ID is required" ||
+      error.message === "Only image files are allowed" ||
       error.message?.startsWith("Cloudinary")
     ) {
-      return res.status(400).json({
-        success: false,
-        message: error.message,
-      });
+      return res.status(400).json({ success: false, message: error.message });
     }
-
+ 
     if (error.message === "Category not found") {
-      return res.status(404).json({
-        success: false,
-        message: error.message,
-      });
+      return res.status(404).json({ success: false, message: error.message });
     }
-
+ 
     console.error("Create product error:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Internal server error",
-    });
+    return res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
-
-/**
- * Update product (Admin only)
- * PUT /api/products/:id
- */
+ 
 export const updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    let body = parseProductBody(req.body);
-
-    if (req.file) {
-      const existingProduct = await productService.getProductById(id);
-      if (existingProduct?.imagePublicId) {
-        try {
-          await destroy(existingProduct.imagePublicId);
-        } catch (err) {
-          console.warn("Cloudinary destroy failed:", err.message);
-        }
-      }
-      const result = await uploadFromBuffer(req.file.buffer, {
-        folder: "greek-restaurant/products",
-      });
-      body.imageUrl = result.secure_url;
-      body.imagePublicId = result.public_id;
-    }
-
-    const product = await productService.updateProduct(id, body);
-
+ 
+    // Merge any newly uploaded image into the body data
+    const { imageUrl, imagePublicId } = req.uploadedImage ?? {};
+ 
+    const product = await productService.updateProduct(id, {
+      ...req.body,
+      // Only spread image fields when a new file was actually uploaded
+      ...(imageUrl !== undefined && { imageUrl, imagePublicId }),
+    });
+ 
     return res.status(200).json({
       success: true,
       message: "Product updated successfully",
@@ -163,34 +144,21 @@ export const updateProduct = async (req, res) => {
     });
   } catch (error) {
     if (
-      error.message === "Product not found" ||
-      error.message === "Category not found"
-    ) {
-      return res.status(404).json({
-        success: false,
-        message: error.message,
-      });
-    }
-
-    if (
       error.message === "Product name cannot be empty" ||
       error.message === "Invalid base price" ||
-      error.message?.startsWith("Cloudinary")
+      error.message === "Only image files are allowed"
     ) {
-      return res.status(400).json({
-        success: false,
-        message: error.message,
-      });
+      return res.status(400).json({ success: false, message: error.message });
     }
-
+ 
+    if (error.message === "Product not found") {
+      return res.status(404).json({ success: false, message: error.message });
+    }
+ 
     console.error("Update product error:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Internal server error",
-    });
+    return res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
-
 /**
  * Delete product (Admin only)
  * DELETE /api/products/:id

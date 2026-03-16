@@ -2,6 +2,7 @@
 import { Router } from "express";
 import * as categoryController from "./category.controller.js";
 import { authenticate, authorize } from "../auth/auth.middleware.js";
+import {uploadCategoryImage} from "../../utils/upload.js"
 
 const router = Router();
 
@@ -9,17 +10,19 @@ const router = Router();
 router.get("/", categoryController.getCategories);
 router.get("/:id", categoryController.getCategoryById);
 
-// Protected admin routes
 router.post(
-  "/",
+  "/categories",
   authenticate,
   authorize("ADMIN"),
+  uploadCategoryImage,   // optional image upload → attaches req.uploadedImage
   categoryController.createCategory
 );
+ 
 router.put(
-  "/:id",
+  "/categories/:id",
   authenticate,
   authorize("ADMIN"),
+  uploadCategoryImage,   // optional – only overwrites image when a new file is sent
   categoryController.updateCategory
 );
 router.delete(

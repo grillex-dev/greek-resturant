@@ -130,6 +130,8 @@ model Category {
 
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
   restaurantId String
+  imageUrl  String?
+  imagePublicId String?
 
   products     Product[]
 }
@@ -221,23 +223,27 @@ model ProductExtra {
 //////////////////////////////////////////////////////
 
 model CartItem {
-  id           String  @id @default(uuid())
-  user         User?   @relation(fields: [userId], references: [id])
-  userId       String?
+  id                   String   @id @default(uuid())
+  
+  userId               String?
+  user                 User?    @relation(fields: [userId], references: [id])
 
-  product      Product @relation(fields: [productId], references: [id])
-  productId    String
+  // For guest users
+  sessionId            String?
+  @@index([sessionId])
 
-  quantity     Int @default(1)
+  product              Product  @relation(fields: [productId], references: [id])
+  productId            String
 
-  basePriceSnapshot  Decimal @db.Decimal(10,2)
-  finalPriceSnapshot Decimal @db.Decimal(10,2)
+  quantity             Int      @default(1)
+  basePriceSnapshot    Decimal  @db.Decimal(10, 2)
+  finalPriceSnapshot   Decimal  @db.Decimal(10, 2)
+  note                 String?
 
-  note         String?
+  customizations       CartItemCustomization[]
 
-  customizations CartItemCustomization[]
-
-  createdAt DateTime @default(now())
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
 }
 
 model CartItemCustomization {
@@ -256,25 +262,31 @@ model CartItemCustomization {
 //////////////////////////////////////////////////////
 
 model Order {
-  id            String       @id @default(uuid())
-  user          User?        @relation(fields: [userId], references: [id])
-  userId        String?
+  id                    String         @id @default(uuid())
+  
+  userId                String?
+  user                  User?          @relation(fields: [userId], references: [id])
 
-  restaurant    Restaurant   @relation(fields: [restaurantId], references: [id])
-  restaurantId  String
+  // Guest information (used only when userId is null)
+  guestName             String?
+  guestEmail            String?
+  guestPhone            String?
 
-  fulfillmentType FulfillmentType
+  restaurant            Restaurant     @relation(fields: [restaurantId], references: [id])
+  restaurantId          String
 
-  totalAmount   Decimal      @db.Decimal(10,2)
-  status        OrderStatus  @default(PENDING)
+  fulfillmentType       FulfillmentType
+  totalAmount           Decimal        @db.Decimal(10, 2)
+  status                OrderStatus    @default(PENDING)
 
   stripePaymentIntentId String?
-  paidAt        DateTime?
+  paidAt                DateTime?
 
-  items         OrderItem[]
-  fulfillment   FulfillmentDetails?
+  items                 OrderItem[]
+  fulfillment           FulfillmentDetails?
 
-  createdAt     DateTime @default(now())
+  createdAt             DateTime       @default(now())
+  updatedAt             DateTime       @updatedAt
 }
 
 //////////////////////////////////////////////////////

@@ -65,12 +65,19 @@ export const getCategoryById = async (req, res) => {
  * Create new category (Admin only)
  * POST /api/categories
  */
+ 
 export const createCategory = async (req, res) => {
   try {
     const { name, restaurantId } = req.body;
-
-    const category = await categoryService.createCategory(name, restaurantId);
-
+ 
+    // If the upload middleware ran and found a file, it attaches req.uploadedImage
+    const { imageUrl, imagePublicId } = req.uploadedImage ?? {};
+ 
+    const category = await categoryService.createCategory(name, restaurantId, {
+      imageUrl,
+      imagePublicId,
+    });
+ 
     return res.status(201).json({
       success: true,
       message: "Category created successfully",
@@ -79,75 +86,60 @@ export const createCategory = async (req, res) => {
   } catch (error) {
     if (
       error.message === "Category name is required" ||
-      error.message === "Restaurant ID is required"
+      error.message === "Restaurant ID is required" ||
+      error.message === "Only image files are allowed"
     ) {
-      return res.status(400).json({
-        success: false,
-        message: error.message,
-      });
+      return res.status(400).json({ success: false, message: error.message });
     }
-
+ 
     if (error.message === "Category with this name already exists") {
-      return res.status(409).json({
-        success: false,
-        message: error.message,
-      });
+      return res.status(409).json({ success: false, message: error.message });
     }
-
+ 
     console.error("Create category error:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Internal server error",
-    });
+    return res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
-
-/**
- * Update category (Admin only)
- * PUT /api/categories/:id
- */
+ 
 export const updateCategory = async (req, res) => {
   try {
     const { id } = req.params;
     const { name } = req.body;
-
-    const category = await categoryService.updateCategory(id, name);
-
+ 
+    // Pick up any newly uploaded image (optional on update)
+    const { imageUrl, imagePublicId } = req.uploadedImage ?? {};
+ 
+    const category = await categoryService.updateCategory(id, {
+      name,
+      imageUrl,
+      imagePublicId,
+    });
+ 
     return res.status(200).json({
       success: true,
       message: "Category updated successfully",
       data: category,
     });
   } catch (error) {
-    if (error.message === "Category name is required") {
-      return res.status(400).json({
-        success: false,
-        message: error.message,
-      });
+    if (
+      error.message === "Category name cannot be empty" ||
+      error.message === "Only image files are allowed"
+    ) {
+      return res.status(400).json({ success: false, message: error.message });
     }
-
+ 
     if (error.message === "Category not found") {
-      return res.status(404).json({
-        success: false,
-        message: error.message,
-      });
+      return res.status(404).json({ success: false, message: error.message });
     }
-
+ 
     if (error.message === "Category with this name already exists") {
-      return res.status(409).json({
-        success: false,
-        message: error.message,
-      });
+      return res.status(409).json({ success: false, message: error.message });
     }
-
+ 
     console.error("Update category error:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Internal server error",
-    });
+    return res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
-
 /**
  * Delete category (Admin only)
  * DELETE /api/categories/:id

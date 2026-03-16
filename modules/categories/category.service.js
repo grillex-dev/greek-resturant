@@ -38,86 +38,80 @@ export const getCategoryById = async (id) => {
   return category;
 };
 
-/**
- * Create new category
- * @param {string} name - Category name
- * @param {string} restaurantId - Restaurant ID
- * @returns {Promise<object>} Created category
- */
-export const createCategory = async (name, restaurantId) => {
-  // Validate input
+export const createCategory = async (name, restaurantId, imageData = {}) => {
   if (!name || name.trim().length === 0) {
     throw new Error("Category name is required");
   }
-
   if (!restaurantId) {
     throw new Error("Restaurant ID is required");
   }
-
-  // Check for duplicate name in same restaurant
+ 
   const existingCategory = await prisma.category.findFirst({
     where: {
       name: { equals: name.trim(), mode: "insensitive" },
       restaurantId,
     },
   });
-
+ 
   if (existingCategory) {
     throw new Error("Category with this name already exists");
   }
-
+ 
   const category = await prisma.category.create({
     data: {
       name: name.trim(),
       restaurantId,
+      imageUrl: imageData.imageUrl ?? null,
+      imagePublicId: imageData.imagePublicId ?? null,
     },
   });
-
+ 
   return category;
 };
-
-/**
- * Update category
- * @param {string} id - Category ID
- * @param {string} name - New category name
- * @returns {Promise<object>} Updated category
- */
-export const updateCategory = async (id, name) => {
-  // Validate input
-  if (!name || name.trim().length === 0) {
-    throw new Error("Category name is required");
-  }
-
-  // Check if category exists
-  const existingCategory = await prisma.category.findUnique({
-    where: { id },
-  });
-
+ 
+export const updateCategory = async (id, data) => {
+  const { name, imageUrl, imagePublicId } = data;
+ 
+  const existingCategory = await prisma.category.findUnique({ where: { id } });
   if (!existingCategory) {
     throw new Error("Category not found");
   }
-
-  // Check for duplicate name
-  const duplicateCategory = await prisma.category.findFirst({
-    where: {
-      name: { equals: name.trim(), mode: "insensitive" },
-      restaurantId: existingCategory.restaurantId,
-      id: { not: id },
-    },
-  });
-
-  if (duplicateCategory) {
-    throw new Error("Category with this name already exists");
+ 
+  const updateData = {};
+ 
+  if (name !== undefined) {
+    if (name.trim().length === 0) {
+      throw new Error("Category name cannot be empty");
+    }
+ 
+    // Check for duplicate name (excluding this record)
+    const duplicate = await prisma.category.findFirst({
+      where: {
+        name: { equals: name.trim(), mode: "insensitive" },
+        restaurantId: existingCategory.restaurantId,
+        NOT: { id },
+      },
+    });
+ 
+    if (duplicate) {
+      throw new Error("Category with this name already exists");
+    }
+ 
+    updateData.name = name.trim();
   }
-
+ 
+  // Only overwrite image fields when a new upload was provided
+  if (imageUrl !== undefined) updateData.imageUrl = imageUrl;
+  if (imagePublicId !== undefined) updateData.imagePublicId = imagePublicId;
+ 
   const category = await prisma.category.update({
     where: { id },
-    data: { name: name.trim() },
+    data: updateData,
   });
-
+ 
   return category;
 };
-
+ 
 /**
  * Delete category
  * @param {string} id - Category ID
