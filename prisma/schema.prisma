@@ -135,8 +135,8 @@ model Category {
   id           String @id @default(uuid())
   name         String
 
-  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
-  restaurantId String
+  restaurant   Restaurant? @relation(fields: [restaurantId], references: [id])
+  restaurantId String?
   imageUrl  String?
   imagePublicId String?
 
@@ -159,8 +159,8 @@ model Product {
   category     Category @relation(fields: [categoryId], references: [id])
   categoryId   String
 
-  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
-  restaurantId String
+  restaurant   Restaurant? @relation(fields: [restaurantId], references: [id])
+  restaurantId String?
 
   components   ProductComponent[]
   extras       ProductExtra[]
@@ -193,8 +193,8 @@ model Component {
   name         String
   costImpact   Decimal @db.Decimal(10,2)
 
-  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
-  restaurantId String
+  restaurant   Restaurant? @relation(fields: [restaurantId], references: [id])
+  restaurantId String?
 
   products     ProductComponent[]
 }
@@ -221,8 +221,8 @@ model Extra {
   name         String
   price        Decimal @db.Decimal(10,2)
 
-  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
-  restaurantId String
+  restaurant   Restaurant? @relation(fields: [restaurantId], references: [id])
+  restaurantId String?
 
   products     ProductExtra[]
 }
@@ -295,8 +295,8 @@ model Order {
   guestEmail            String?
   guestPhone            String?
 
-  restaurant            Restaurant     @relation(fields: [restaurantId], references: [id])
-  restaurantId          String
+  restaurant            Restaurant?     @relation(fields: [restaurantId], references: [id])
+  restaurantId          String?
 
   fulfillmentType       FulfillmentType
   totalAmount           Decimal        @db.Decimal(10, 2)

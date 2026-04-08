@@ -11,7 +11,7 @@ router.get("/", categoryController.getCategories);
 router.get("/:id", categoryController.getCategoryById);
 
 router.post(
-  "/categories",
+  "/",
   authenticate,
   authorize("ADMIN"),
   uploadCategoryImage,   // optional image upload → attaches req.uploadedImage

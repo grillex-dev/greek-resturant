@@ -130,13 +130,20 @@ export const createProduct = async (data) => {
     throw new Error("Category ID is required");
   }
 
-  if (!restaurantId) {
-    throw new Error("Restaurant ID is required");
+  // If restaurantId provided, check if restaurant exists
+  if (restaurantId) {
+    const restaurant = await prisma.restaurant.findUnique({
+      where: { id: restaurantId },
+    });
+
+    if (!restaurant) {
+      throw new Error("Restaurant not found");
+    }
   }
 
   // Check if category exists
   const category = await prisma.category.findFirst({
-    where: { id: categoryId, restaurantId },
+    where: { id: categoryId },
   });
 
   if (!category) {
@@ -164,7 +171,7 @@ export const createProduct = async (data) => {
       imageUrl,
       imagePublicId,
       categoryId,
-      restaurantId,
+      restaurantId: restaurantId || null,
       components: componentIds?.length
         ? {
             create: componentIds.map((componentId) => ({

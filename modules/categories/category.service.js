@@ -38,18 +38,26 @@ export const getCategoryById = async (id) => {
   return category;
 };
 
-export const createCategory = async (name, restaurantId, imageData = {}) => {
+export const createCategory = async (name, restaurantId = null, imageData = {}) => {
   if (!name || name.trim().length === 0) {
     throw new Error("Category name is required");
   }
-  if (!restaurantId) {
-    throw new Error("Restaurant ID is required");
+
+  // If restaurantId provided, check if restaurant exists
+  if (restaurantId) {
+    const restaurant = await prisma.restaurant.findUnique({
+      where: { id: restaurantId },
+    });
+
+    if (!restaurant) {
+      throw new Error("Restaurant not found");
+    }
   }
  
   const existingCategory = await prisma.category.findFirst({
     where: {
       name: { equals: name.trim(), mode: "insensitive" },
-      restaurantId,
+      restaurantId: restaurantId || null,
     },
   });
  
@@ -60,7 +68,7 @@ export const createCategory = async (name, restaurantId, imageData = {}) => {
   const category = await prisma.category.create({
     data: {
       name: name.trim(),
-      restaurantId,
+      restaurantId: restaurantId || null,
       imageUrl: imageData.imageUrl ?? null,
       imagePublicId: imageData.imagePublicId ?? null,
     },
