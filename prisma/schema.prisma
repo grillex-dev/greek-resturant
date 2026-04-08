@@ -36,6 +36,13 @@ enum FulfillmentType {
   DINE_IN
 }
 
+enum SizeVariant {
+  SMALL
+  MEDIUM
+  LARGE
+  EXTRA_LARGE
+}
+
 //////////////////////////////////////////////////////
 // USERS
 //////////////////////////////////////////////////////
@@ -157,11 +164,24 @@ model Product {
 
   components   ProductComponent[]
   extras       ProductExtra[]
+  sizes        ProductSize[]  // NEW
 
   cartItems    CartItem[]
   orderItems   OrderItem[]
 
   createdAt    DateTime @default(now())
+}
+
+// NEW: Product sizes with pricing
+model ProductSize {
+  id           String  @id @default(uuid())
+  product      Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId    String
+
+  size         SizeVariant
+  priceModifier Decimal @db.Decimal(10,2)  // Additional cost on top of basePrice
+
+  @@unique([productId, size])
 }
 
 //////////////////////////////////////////////////////
@@ -236,6 +256,9 @@ model CartItem {
   productId            String
 
   quantity             Int      @default(1)
+  
+  size                 SizeVariant?  // NEW
+  
   basePriceSnapshot    Decimal  @db.Decimal(10, 2)
   finalPriceSnapshot   Decimal  @db.Decimal(10, 2)
   note                 String?
@@ -340,6 +363,8 @@ model OrderItem {
   productNameSnapshot String
 
   quantity     Int
+  
+  sizeSnapshot SizeVariant?  // NEW
 
   basePriceSnapshot  Decimal @db.Decimal(10,2)
   finalPriceSnapshot Decimal @db.Decimal(10,2)

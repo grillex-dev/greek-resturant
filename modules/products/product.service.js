@@ -51,7 +51,7 @@ export const getProducts = async (filters) => {
 /**
  * Get single product with details
  * @param {string} id - Product ID
- * @returns {Promise<object>} Product with components and extras
+ * @returns {Promise<object>} Product with components, extras, and sizes
  */
 export const getProductById = async (id) => {
   const product = await prisma.product.findUnique({
@@ -85,6 +85,13 @@ export const getProductById = async (id) => {
           },
         },
       },
+      sizes: {  // NEW
+        select: {
+          id: true,
+          size: true,
+          priceModifier: true,
+        },
+      },
     },
   });
 
@@ -107,6 +114,7 @@ export const createProduct = async (data) => {
     restaurantId,
     componentIds,
     extraIds,
+    sizes,  // NEW: Array of { size: "SMALL", priceModifier: 0 }
   } = data;
 
   // Validate required fields
@@ -135,6 +143,19 @@ export const createProduct = async (data) => {
     throw new Error("Category not found");
   }
 
+  // Validate sizes if provided
+  const validSizes = ["SMALL", "MEDIUM", "LARGE", "EXTRA_LARGE"];
+  if (sizes?.length > 0) {
+    for (const size of sizes) {
+      if (!validSizes.includes(size.size)) {
+        throw new Error(`Invalid size: ${size.size}`);
+      }
+      if (isNaN(parseFloat(size.priceModifier))) {
+        throw new Error(`Invalid price modifier for size ${size.size}`);
+      }
+    }
+  }
+
   const product = await prisma.product.create({
     data: {
       name: name.trim(),
@@ -158,11 +179,20 @@ export const createProduct = async (data) => {
             })),
           }
         : undefined,
+      sizes: sizes?.length  // NEW
+        ? {
+            create: sizes.map((size) => ({
+              size: size.size,
+              priceModifier: parseFloat(size.priceModifier),
+            })),
+          }
+        : undefined,
     },
     include: {
       category: true,
       components: { include: { component: true } },
       extras: { include: { extra: true } },
+      sizes: true,  // NEW
     },
   });
 
@@ -186,6 +216,7 @@ export const updateProduct = async (id, data) => {
     isActive,
     componentIds,
     extraIds,
+    sizes,  // NEW
   } = data;
 
   // Check if product exists
@@ -235,12 +266,10 @@ export const updateProduct = async (id, data) => {
 
   // Handle component updates if provided
   if (componentIds !== undefined) {
-    // Delete existing component relations
     await prisma.productComponent.deleteMany({
       where: { productId: id },
     });
 
-    // Create new component relations
     if (componentIds.length > 0) {
       await prisma.productComponent.createMany({
         data: componentIds.map((componentId) => ({
@@ -253,17 +282,44 @@ export const updateProduct = async (id, data) => {
 
   // Handle extra updates if provided
   if (extraIds !== undefined) {
-    // Delete existing extra relations
     await prisma.productExtra.deleteMany({
       where: { productId: id },
     });
 
-    // Create new extra relations
     if (extraIds.length > 0) {
       await prisma.productExtra.createMany({
         data: extraIds.map((extraId) => ({
           productId: id,
           extraId,
+        })),
+      });
+    }
+  }
+
+  // Handle size updates if provided  // NEW
+  if (sizes !== undefined) {
+    const validSizes = ["SMALL", "MEDIUM", "LARGE", "EXTRA_LARGE"];
+    if (sizes.length > 0) {
+      for (const size of sizes) {
+        if (!validSizes.includes(size.size)) {
+          throw new Error(`Invalid size: ${size.size}`);
+        }
+        if (isNaN(parseFloat(size.priceModifier))) {
+          throw new Error(`Invalid price modifier for size ${size.size}`);
+        }
+      }
+    }
+
+    await prisma.productSize.deleteMany({
+      where: { productId: id },
+    });
+
+    if (sizes.length > 0) {
+      await prisma.productSize.createMany({
+        data: sizes.map((size) => ({
+          productId: id,
+          size: size.size,
+          priceModifier: parseFloat(size.priceModifier),
         })),
       });
     }
@@ -276,6 +332,7 @@ export const updateProduct = async (id, data) => {
       category: true,
       components: { include: { component: true } },
       extras: { include: { extra: true } },
+      sizes: true,  // NEW
     },
   });
 

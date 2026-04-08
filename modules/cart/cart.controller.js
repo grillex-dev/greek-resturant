@@ -7,38 +7,35 @@ import * as cartService from "./cart.service.js";
  */
 export const getCart = async (req, res) => {
   try {
-    const userId = req.userId;
+    const userId = req.userId || null;
+    const sessionId = req.sessionId || null;   // ← You'll pass this from middleware
 
-    const cartItems = await cartService.getCart(userId);
-    const totals = await cartService.getCartTotals(userId);
+    const cartItems = await cartService.getCart({ userId, sessionId });
+    const totals = await cartService.getCartTotals({ userId, sessionId });
 
     return res.status(200).json({
       success: true,
-      data: {
-        items: cartItems,
-        totals,
-      },
+      data: { items: cartItems, totals },
     });
   } catch (error) {
     console.error("Get cart error:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Internal server error",
-    });
+    return res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
 
 /**
- * Add item to cart
+ * Add item to cart - Works for guests too
  * POST /api/cart
  */
 export const addToCart = async (req, res) => {
   try {
-    const userId = req.userId;
+    const userId = req.userId || null;
+    const sessionId = req.sessionId || null;
     const { productId, quantity, customizations, note } = req.body;
 
     const cartItem = await cartService.addToCart({
       userId,
+      sessionId,
       productId,
       quantity,
       customizations,
@@ -51,57 +48,28 @@ export const addToCart = async (req, res) => {
       data: cartItem,
     });
   } catch (error) {
-    if (
-      error.message === "User ID is required" ||
-      error.message === "Product ID is required" ||
-      error.message === "Quantity must be at least 1"
-    ) {
-      return res.status(400).json({
-        success: false,
-        message: error.message,
-      });
-    }
+    const status = error.message.includes("required") || 
+                   error.message.includes("at least 1") ? 400 : 
+                   error.message.includes("not found") ? 404 : 500;
 
-    if (error.message === "Product not found") {
-      return res.status(404).json({
-        success: false,
-        message: error.message,
-      });
-    }
-
-    if (
-      error.message === "Product is not available" ||
-      error.message.includes("is not available for this product") ||
-      error.message.includes("cannot be removed")
-    ) {
-      return res.status(400).json({
-        success: false,
-        message: error.message,
-      });
-    }
-
-    console.error("Add to cart error:", error);
-    return res.status(500).json({
+    return res.status(status).json({
       success: false,
-      message: "Internal server error",
+      message: error.message,
     });
   }
 };
-
 /**
  * Update cart item quantity
  * PUT /api/cart/:id
  */
 export const updateCartItemQuantity = async (req, res) => {
   try {
-    const userId = req.userId;
+    const userId = req.userId || null;
+    const sessionId = req.sessionId || null;
     const { id } = req.params;
     const { quantity, note } = req.body;
 
-    const cartItem = await cartService.updateCartItemQuantity(id, userId, {
-      quantity,
-      note,
-    });
+    const cartItem = await cartService.updateCartItemQuantity(id, { userId, sessionId }, { quantity, note });
 
     return res.status(200).json({
       success: true,
@@ -109,25 +77,8 @@ export const updateCartItemQuantity = async (req, res) => {
       data: cartItem,
     });
   } catch (error) {
-    if (error.message === "Quantity must be at least 1") {
-      return res.status(400).json({
-        success: false,
-        message: error.message,
-      });
-    }
-
-    if (error.message === "Cart item not found") {
-      return res.status(404).json({
-        success: false,
-        message: error.message,
-      });
-    }
-
-    console.error("Update cart item error:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Internal server error",
-    });
+    const status = error.message === "Cart item not found" ? 404 : 400;
+    return res.status(status).json({ success: false, message: error.message });
   }
 };
 
@@ -137,51 +88,32 @@ export const updateCartItemQuantity = async (req, res) => {
  */
 export const removeFromCart = async (req, res) => {
   try {
-    const userId = req.userId;
+    const userId = req.userId || null;
+    const sessionId = req.sessionId || null;
     const { id } = req.params;
 
-    const result = await cartService.removeFromCart(id, userId);
+    const result = await cartService.removeFromCart(id, { userId, sessionId });
 
-    return res.status(200).json({
-      success: true,
-      message: result.message,
-    });
+    return res.status(200).json({ success: true, message: result.message });
   } catch (error) {
-    if (error.message === "Cart item not found") {
-      return res.status(404).json({
-        success: false,
-        message: error.message,
-      });
-    }
-
-    console.error("Remove from cart error:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Internal server error",
-    });
+    return res.status(error.message === "Cart item not found" ? 404 : 500)
+              .json({ success: false, message: error.message });
   }
 };
-
 /**
  * Clear cart
  * DELETE /api/cart
  */
 export const clearCart = async (req, res) => {
   try {
-    const userId = req.userId;
+    const userId = req.userId || null;
+    const sessionId = req.sessionId || null;
 
-    const result = await cartService.clearCart(userId);
+    const result = await cartService.clearCart({ userId, sessionId });
 
-    return res.status(200).json({
-      success: true,
-      message: result.message,
-    });
+    return res.status(200).json({ success: true, message: result.message });
   } catch (error) {
-    console.error("Clear cart error:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Internal server error",
-    });
+    return res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
 

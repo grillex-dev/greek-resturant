@@ -10,19 +10,10 @@ import prisma from "../../config/prisma.js";
 export const getUserOrders = async (userId, options = {}) => {
   const { status, limit = 20, offset = 0 } = options;
 
-  const where = { userId };
-  if (status) {
-    where.status = status;
-  }
-
   const orders = await prisma.order.findMany({
-    where,
+    where: { userId },
     include: {
-      items: {
-        include: {
-          customizations: true,
-        },
-      },
+      items: { include: { customizations: true } },
       fulfillment: true,
     },
     orderBy: { createdAt: "desc" },
@@ -41,32 +32,19 @@ export const getUserOrders = async (userId, options = {}) => {
  */
 export const getOrderById = async (orderId, userId = null) => {
   const where = { id: orderId };
-  if (userId) {
-    where.userId = userId;
-  }
+  if (userId) where.userId = userId;
 
   const order = await prisma.order.findFirst({
     where,
     include: {
-      user: {
-        select: {
-          id: true,
-          name: true,
-          email: true,
-        },
-      },
-      items: {
-        include: {
-          customizations: true,
-        },
-      },
+      user: { select: { id: true, name: true, email: true } },
+      items: { include: { customizations: true } },
       fulfillment: true,
     },
   });
 
   return order;
 };
-
 /**
  * Get all orders (Admin)
  * @param {object} filters - Filter options
@@ -128,31 +106,26 @@ export const getAllOrders = async (filters = {}) => {
 export const createOrder = async (data) => {
   const {
     userId,
+    sessionId,
     restaurantId,
     fulfillmentType,
     fulfillmentDetails,
     cartItems,
     totalAmount,
+    guestName,
+    guestEmail,
+    guestPhone,
   } = data;
 
-  // Validate inputs
-  if (!userId) {
-    throw new Error("User ID is required");
-  }
-
-  if (!restaurantId) {
-    throw new Error("Restaurant ID is required");
-  }
-
+  if (!restaurantId) throw new Error("Restaurant ID is required");
   if (!fulfillmentType || !["DELIVERY", "PICKUP", "DINE_IN"].includes(fulfillmentType)) {
     throw new Error("Valid fulfillment type is required");
   }
-
   if (!cartItems || cartItems.length === 0) {
     throw new Error("Cart is empty");
   }
 
-  // Validate fulfillment details based on type
+  // Fulfillment validation
   if (fulfillmentType === "DELIVERY") {
     if (!fulfillmentDetails?.street || !fulfillmentDetails?.phoneNumber) {
       throw new Error("Delivery address and phone number are required");
@@ -163,67 +136,63 @@ export const createOrder = async (data) => {
     }
   }
 
-  // Create order with items
   const order = await prisma.order.create({
     data: {
-      userId,
+      userId: userId || null,
+      guestName: guestName || null,
+      guestEmail: guestEmail || null,
+      guestPhone: guestPhone || null,
       restaurantId,
       fulfillmentType,
       totalAmount: parseFloat(totalAmount),
       status: "PENDING",
+
       items: {
         create: cartItems.map((item) => ({
           productId: item.productId,
-          productNameSnapshot: item.product.name,
+          productNameSnapshot: item.product?.name || item.productNameSnapshot,
           quantity: item.quantity,
+          sizeSnapshot: item.size || null,  // NEW
           basePriceSnapshot: item.basePriceSnapshot,
           finalPriceSnapshot: item.finalPriceSnapshot,
           note: item.note || null,
           customizations: item.customizations?.length
             ? {
-                create: item.customizations.map((customization) => ({
-                  type: customization.type,
-                  referenceId: customization.referenceId,
-                  nameSnapshot: customization.nameSnapshot,
-                  priceImpact: customization.priceImpact,
+                create: item.customizations.map((c) => ({
+                  type: c.type,
+                  referenceId: c.referenceId,
+                  nameSnapshot: c.nameSnapshot,
+                  priceImpact: c.priceImpact,
                 })),
               }
             : undefined,
         })),
       },
+
       fulfillment: fulfillmentDetails
         ? {
             create: {
-              contactName: fulfillmentDetails.contactName,
-              phoneNumber: fulfillmentDetails.phoneNumber,
+              contactName: fulfillmentDetails.contactName || guestName,
+              phoneNumber: fulfillmentDetails.phoneNumber || guestPhone,
               street: fulfillmentDetails.street,
               building: fulfillmentDetails.building,
               state: fulfillmentDetails.state,
               locationNote: fulfillmentDetails.locationNote,
-              pickupTime: fulfillmentDetails.pickupTime
-                ? new Date(fulfillmentDetails.pickupTime)
-                : null,
-              reservationTime: fulfillmentDetails.reservationTime
-                ? new Date(fulfillmentDetails.reservationTime)
-                : null,
+              pickupTime: fulfillmentDetails.pickupTime ? new Date(fulfillmentDetails.pickupTime) : null,
+              reservationTime: fulfillmentDetails.reservationTime ? new Date(fulfillmentDetails.reservationTime) : null,
               tableId: fulfillmentDetails.tableId,
             },
           }
         : undefined,
     },
     include: {
-      items: {
-        include: {
-          customizations: true,
-        },
-      },
+      items: { include: { customizations: true } },
       fulfillment: true,
     },
   });
 
   return order;
 };
-
 /**
  * Update order status (Admin)
  * @param {string} orderId - Order ID

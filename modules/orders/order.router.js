@@ -5,12 +5,16 @@ import { authenticate, authorize } from "../auth/auth.middleware.js";
 
 const router = Router();
 
-// Customer routes (require authentication)
+// ====================== PUBLIC / GUEST ROUTES ======================
+
+// Guest + Authenticated users can create order
+router.post("/", orderController.createOrder);   // ← Removed authenticate middleware
+
+// Authenticated customer routes
 router.get("/", authenticate, orderController.getUserOrders);
 router.get("/:id", authenticate, orderController.getOrderById);
-router.post("/", authenticate, orderController.createOrder);
 
-// Admin routes
+// ====================== ADMIN ROUTES ======================
 router.get(
   "/admin/all",
   authenticate,

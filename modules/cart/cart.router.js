@@ -5,8 +5,6 @@ import { authenticate } from "../auth/auth.middleware.js";
 
 const router = Router();
 
-// All cart routes require authentication
-router.use(authenticate);
 
 // Cart routes
 router.get("/", cartController.getCart);

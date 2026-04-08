@@ -3,8 +3,7 @@ import * as orderService from "./order.service.js";
 import * as cartService from "../cart/cart.service.js";
 
 /**
- * Get user orders
- * GET /api/orders
+ * Get user orders (Only for authenticated users)
  */
 export const getUserOrders = async (req, res) => {
   try {
@@ -23,16 +22,12 @@ export const getUserOrders = async (req, res) => {
     });
   } catch (error) {
     console.error("Get user orders error:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Internal server error",
-    });
+    return res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
 
 /**
- * Get single order (Customer)
- * GET /api/orders/:id
+ * Get single order (Customer - only their own)
  */
 export const getOrderById = async (req, res) => {
   try {
@@ -42,37 +37,37 @@ export const getOrderById = async (req, res) => {
     const order = await orderService.getOrderById(id, userId);
 
     if (!order) {
-      return res.status(404).json({
-        success: false,
-        message: "Order not found",
-      });
+      return res.status(404).json({ success: false, message: "Order not found" });
     }
 
-    return res.status(200).json({
-      success: true,
-      data: order,
-    });
+    return res.status(200).json({ success: true, data: order });
   } catch (error) {
     console.error("Get order error:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Internal server error",
-    });
+    return res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
 
 /**
- * Create order (Checkout)
+ * Create Order - NOW SUPPORTS BOTH AUTHENTICATED + GUEST USERS
  * POST /api/orders
  */
 export const createOrder = async (req, res) => {
   try {
-    const userId = req.userId;
-    const { restaurantId, fulfillmentType, fulfillmentDetails } = req.body;
+    const userId = req.userId || null;
+    const sessionId = req.sessionId || null;        // ← Comes from guest middleware
 
-    // Get cart items
-    const cartItems = await cartService.getCart(userId);
-    const cartTotals = await cartService.getCartTotals(userId);
+    const {
+      restaurantId,
+      fulfillmentType,
+      fulfillmentDetails,
+      guestName,
+      guestEmail,
+      guestPhone,
+    } = req.body;
+
+    // Get cart items using either userId or sessionId
+    const cartItems = await cartService.getCart({ userId, sessionId });
+    const cartTotals = await cartService.getCartTotals({ userId, sessionId });
 
     if (cartItems.length === 0) {
       return res.status(400).json({
@@ -83,15 +78,20 @@ export const createOrder = async (req, res) => {
 
     const order = await orderService.createOrder({
       userId,
+      sessionId,                    // passed for logging/tracking
       restaurantId,
       fulfillmentType,
       fulfillmentDetails,
       cartItems,
       totalAmount: cartTotals.totalAmount,
+      // Guest fields
+      guestName,
+      guestEmail,
+      guestPhone,
     });
 
-    // Clear cart after successful order creation
-    await cartService.clearCart(userId);
+    // Clear cart after successful order
+    await cartService.clearCart({ userId, sessionId });
 
     return res.status(201).json({
       success: true,
@@ -99,28 +99,18 @@ export const createOrder = async (req, res) => {
       data: order,
     });
   } catch (error) {
-    if (
-      error.message === "User ID is required" ||
-      error.message === "Restaurant ID is required" ||
-      error.message === "Valid fulfillment type is required" ||
-      error.message === "Cart is empty" ||
-      error.message === "Delivery address and phone number are required" ||
-      error.message === "Pickup time is required"
-    ) {
-      return res.status(400).json({
-        success: false,
-        message: error.message,
-      });
-    }
-
     console.error("Create order error:", error);
-    return res.status(500).json({
+
+    const status = 
+      error.message.includes("required") || 
+      error.message.includes("empty") ? 400 : 500;
+
+    return res.status(status).json({
       success: false,
-      message: "Internal server error",
+      message: error.message,
     });
   }
 };
-
 // ============================================
 // ADMIN ROUTES
 // ============================================

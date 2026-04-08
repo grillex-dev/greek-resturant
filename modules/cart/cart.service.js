@@ -2,13 +2,15 @@
 import prisma from "../../config/prisma.js";
 
 /**
- * Get cart items for a user
- * @param {string} userId - User ID
- * @returns {Promise<Array>} Cart items with product details
+ * Get cart items - Supports both userId and sessionId
  */
-export const getCart = async (userId) => {
+export const getCart = async (identifier) => {
+  const { userId, sessionId } = identifier;
+
+  const where = userId ? { userId } : { sessionId };
+
   const cartItems = await prisma.cartItem.findMany({
-    where: { userId },
+    where,
     include: {
       product: {
         select: {
@@ -28,20 +30,14 @@ export const getCart = async (userId) => {
 };
 
 /**
- * Add item to cart
- * @param {object} data - Cart item data
- * @param {string} data.userId - User ID
- * @param {string} data.productId - Product ID
- * @param {number} data.quantity - Quantity
- * @param {Array} data.customizations - Customizations array
- * @returns {Promise<object>} Created cart item
+ * Add item to cart - Supports both authenticated and guest users
  */
 export const addToCart = async (data) => {
-  const { userId, productId, quantity = 1, customizations = [], note } = data;
+  const { userId, sessionId, productId, quantity = 1, customizations = [], note, size } = data;  // NEW: size
 
-  // Validate inputs
-  if (!userId) {
-    throw new Error("User ID is required");
+  // At least one identifier is required
+  if (!userId && !sessionId) {
+    throw new Error("Either userId or sessionId is required");
   }
 
   if (!productId) {
@@ -52,43 +48,47 @@ export const addToCart = async (data) => {
     throw new Error("Quantity must be at least 1");
   }
 
-  // Get product details
   const product = await prisma.product.findUnique({
     where: { id: productId },
     include: {
-      components: {
-        include: { component: true },
-      },
-      extras: {
-        include: { extra: true },
-      },
+      components: { include: { component: true } },
+      extras: { include: { extra: true } },
+      sizes: true,  // NEW
     },
   });
 
-  if (!product) {
-    throw new Error("Product not found");
-  }
+  if (!product) throw new Error("Product not found");
+  if (!product.isActive) throw new Error("Product is not available");
 
-  if (!product.isActive) {
-    throw new Error("Product is not available");
-  }
-
-  // Calculate prices
-  let basePrice = product.basePrice;
+  let basePrice = parseFloat(product.basePrice);
   let finalPrice = basePrice;
-
-  // Process customizations
   const processedCustomizations = [];
 
-  for (const customization of customizations) {
-    const { type, referenceId } = customization;
+  // Handle size pricing  // NEW
+  let sizeModifier = 0;
+  if (size) {
+    const validSizes = ["SMALL", "MEDIUM", "LARGE", "EXTRA_LARGE"];
+    if (!validSizes.includes(size)) {
+      throw new Error("Invalid size");
+    }
+
+    if (product.sizes.length > 0) {
+      const productSize = product.sizes.find((ps) => ps.size === size);
+      if (!productSize) {
+        throw new Error("Size not available for this product");
+      }
+      sizeModifier = parseFloat(productSize.priceModifier);
+      finalPrice = parseFloat(finalPrice) + sizeModifier;
+    }
+  }
+
+  for (const cust of customizations) {
+    const { type, referenceId } = cust;
 
     if (type === "EXTRA") {
-      // Validate extra exists for this product
       const productExtra = product.extras.find((pe) => pe.extraId === referenceId);
-      if (!productExtra) {
-        throw new Error(`Extra ${referenceId} is not available for this product`);
-      }
+      if (!productExtra) throw new Error(`Extra not available for this product`);
+
       finalPrice = parseFloat(finalPrice) + parseFloat(productExtra.extra.price);
       processedCustomizations.push({
         type: "EXTRA",
@@ -96,17 +96,12 @@ export const addToCart = async (data) => {
         nameSnapshot: productExtra.extra.name,
         priceImpact: productExtra.extra.price,
       });
-    } else if (type === "REMOVED_COMPONENT") {
-      // Validate component exists for this product and is removable
-      const productComponent = product.components.find(
-        (pc) => pc.componentId === referenceId
-      );
-      if (!productComponent) {
-        throw new Error(`Component ${referenceId} is not available for this product`);
-      }
-      if (!productComponent.isRemovable) {
-        throw new Error(`Component ${productComponent.component.name} cannot be removed`);
-      }
+    } 
+    else if (type === "REMOVED_COMPONENT") {
+      const productComponent = product.components.find((pc) => pc.componentId === referenceId);
+      if (!productComponent) throw new Error(`Component not available for this product`);
+      if (!productComponent.isRemovable) throw new Error(`Component cannot be removed`);
+
       finalPrice = parseFloat(finalPrice) - parseFloat(productComponent.component.costImpact);
       processedCustomizations.push({
         type: "REMOVED_COMPONENT",
@@ -117,29 +112,22 @@ export const addToCart = async (data) => {
     }
   }
 
-  // Create cart item with customizations
   const cartItem = await prisma.cartItem.create({
     data: {
-      userId,
+      userId: userId || null,
+      sessionId: sessionId || null,
       productId,
       quantity,
+      size: size || null,  // NEW
       basePriceSnapshot: basePrice,
       finalPriceSnapshot: finalPrice,
       note: note?.trim() || null,
       customizations: processedCustomizations.length
-        ? {
-            create: processedCustomizations,
-          }
+        ? { create: processedCustomizations }
         : undefined,
     },
     include: {
-      product: {
-        select: {
-          id: true,
-          name: true,
-          imageUrl: true,
-        },
-      },
+      product: { select: { id: true, name: true, imageUrl: true } },
       customizations: true,
     },
   });
@@ -148,44 +136,39 @@ export const addToCart = async (data) => {
 };
 
 /**
- * Update cart item quantity and/or note
- * @param {string} cartItemId - Cart item ID
- * @param {string} userId - User ID
- * @param {object} updates - Updates to apply
- * @param {number} updates.quantity - New quantity
- * @param {string} [updates.note] - Optional note
- * @returns {Promise<object>} Updated cart item
+ * Update cart item - Supports both userId and sessionId
  */
-export const updateCartItemQuantity = async (cartItemId, userId, updates) => {
-  const { quantity, note } = updates;
+export const updateCartItemQuantity = async (cartItemId, identifier, updates) => {
+  const { userId, sessionId } = identifier;
+  const { quantity, note, size } = updates;  // NEW: size
 
   if (quantity !== undefined && quantity < 1) {
     throw new Error("Quantity must be at least 1");
   }
 
-  // Verify cart item belongs to user
-  const existingItem = await prisma.cartItem.findFirst({
-    where: { id: cartItemId, userId },
-  });
+  const where = userId ? { id: cartItemId, userId } : { id: cartItemId, sessionId };
 
-  if (!existingItem) {
-    throw new Error("Cart item not found");
-  }
+  const existingItem = await prisma.cartItem.findFirst({ where });
 
-  const data = {};
-  if (quantity !== undefined) data.quantity = quantity;
-  if (note !== undefined) data.note = note?.trim() || null;
+  if (!existingItem) throw new Error("Cart item not found");
+
+  // If size is being updated, recalculate price
+  const updateData = {
+    quantity: quantity !== undefined ? quantity : undefined,
+    note: note !== undefined ? (note?.trim() || null) : undefined,
+    size: size !== undefined ? (size || null) : undefined,  // NEW
+  };
+
+  // Remove undefined values
+  Object.keys(updateData).forEach(key => updateData[key] === undefined && delete updateData[key]);
 
   const cartItem = await prisma.cartItem.update({
     where: { id: cartItemId },
-    data,
+    data: updateData,
     include: {
-      product: {
-        select: {
-          id: true,
-          name: true,
-          imageUrl: true,
-        },
+      product: { 
+        select: { id: true, name: true, imageUrl: true },
+        include: { sizes: true }  // NEW
       },
       customizations: true,
     },
@@ -195,70 +178,57 @@ export const updateCartItemQuantity = async (cartItemId, userId, updates) => {
 };
 
 /**
- * Remove item from cart
- * @param {string} cartItemId - Cart item ID
- * @param {string} userId - User ID
- * @returns {Promise<object>} Deleted cart item
+ * Remove from cart - Supports both user and guest
  */
-export const removeFromCart = async (cartItemId, userId) => {
-  // Verify cart item belongs to user
-  const existingItem = await prisma.cartItem.findFirst({
-    where: { id: cartItemId, userId },
-  });
+export const removeFromCart = async (cartItemId, identifier) => {
+  const { userId, sessionId } = identifier;
 
-  if (!existingItem) {
-    throw new Error("Cart item not found");
-  }
+  const where = userId ? { id: cartItemId, userId } : { id: cartItemId, sessionId };
 
-  // Delete customizations first (child records) to satisfy FK constraint
-  await prisma.cartItemCustomization.deleteMany({
-    where: { cartItemId },
-  });
-  await prisma.cartItem.delete({
-    where: { id: cartItemId },
-  });
+  const existingItem = await prisma.cartItem.findFirst({ where });
+  if (!existingItem) throw new Error("Cart item not found");
+
+  await prisma.cartItemCustomization.deleteMany({ where: { cartItemId } });
+  await prisma.cartItem.delete({ where: { id: cartItemId } });
 
   return { message: "Item removed from cart" };
 };
 
 /**
- * Clear cart for user
- * @param {string} userId - User ID
- * @returns {Promise<object>} Success message
+ * Clear cart - Supports both user and guest
  */
-export const clearCart = async (userId) => {
-  // Delete customizations first (child records) to satisfy FK constraint
+export const clearCart = async (identifier) => {
+  const { userId, sessionId } = identifier;
+
+  const where = userId ? { userId } : { sessionId };
+
   await prisma.cartItemCustomization.deleteMany({
-    where: {
-      cartItem: { userId },
-    },
+    where: { cartItem: where },
   });
-  await prisma.cartItem.deleteMany({
-    where: { userId },
-  });
+
+  await prisma.cartItem.deleteMany({ where });
 
   return { message: "Cart cleared successfully" };
 };
 
 /**
- * Get cart totals
- * @param {string} userId - User ID
- * @returns {Promise<object>} Cart totals
+ * Get cart totals - Supports both user and guest
  */
-export const getCartTotals = async (userId) => {
+export const getCartTotals = async (identifier) => {
+  const { userId, sessionId } = identifier;
+
+  const where = userId ? { userId } : { sessionId };
+
   const cartItems = await prisma.cartItem.findMany({
-    where: { userId },
-    include: {
-      customizations: true,
-    },
+    where,
+    include: { customizations: true },
   });
 
   let totalAmount = 0;
   let itemCount = 0;
 
   for (const item of cartItems) {
-    const itemTotal = parseFloat(item.finalPriceSnapshot) * item.quantity;
-    totalAmount += itemTotal;
+    totalAmount += parseFloat(item.finalPriceSnapshot) * item.quantity;
     itemCount += item.quantity;
   }
 

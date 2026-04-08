@@ -47,6 +47,9 @@ services:
     networks:
       - appnet
 
+    # 👇 THIS IS THE IMPORTANT PART
+    command: sh -c "sleep 3 && npx prisma migrate deploy && node dist/main.js"
+
 networks:
   appnet:
     driver: bridge
