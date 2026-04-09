@@ -104,12 +104,7 @@ model Restaurant {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  categories Category[]
-  products   Product[]
-  extras     Extra[]
-  components Component[]
   tables     Table[]
-  orders     Order[]
 }
 
 //////////////////////////////////////////////////////
