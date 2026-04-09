@@ -28,13 +28,6 @@ export const getProducts = async (req, res) => {
   try {
     const { restaurantId, categoryId, search, isActive } = req.query;
 
-    if (!restaurantId) {
-      return res.status(400).json({
-        success: false,
-        message: "Restaurant ID is required",
-      });
-    }
-
     const filters = {
       restaurantId,
       categoryId,
@@ -108,7 +101,6 @@ export const createProduct = async (req, res) => {
       error.message === "Product name is required" ||
       error.message === "Valid base price is required" ||
       error.message === "Category ID is required" ||
-      error.message === "Restaurant ID is required" ||
       error.message === "Only image files are allowed" ||
       error.message?.startsWith("Cloudinary")
     ) {

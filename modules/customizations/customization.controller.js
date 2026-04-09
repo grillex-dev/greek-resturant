@@ -11,16 +11,8 @@ import * as customizationService from "./customization.service.js";
  */
 export const getExtras = async (req, res) => {
   try {
-    const { restaurantId } = req.query;
-
-    if (!restaurantId) {
-      return res.status(400).json({
-        success: false,
-        message: "Restaurant ID is required",
-      });
-    }
-
-    const extras = await customizationService.getExtras(restaurantId);
+    // Removed restaurantId extraction from req.query
+    const extras = await customizationService.getExtras();
 
     return res.status(200).json({
       success: true,
@@ -51,8 +43,7 @@ export const createExtra = async (req, res) => {
   } catch (error) {
     if (
       error.message === "Extra name is required" ||
-      error.message === "Valid price is required" ||
-      error.message === "Restaurant ID is required"
+      error.message === "Valid price is required"
     ) {
       return res.status(400).json({
         success: false,
@@ -155,16 +146,8 @@ export const deleteExtra = async (req, res) => {
  */
 export const getComponents = async (req, res) => {
   try {
-    const { restaurantId } = req.query;
-
-    if (!restaurantId) {
-      return res.status(400).json({
-        success: false,
-        message: "Restaurant ID is required",
-      });
-    }
-
-    const components = await customizationService.getComponents(restaurantId);
+    // Removed restaurantId extraction from req.query
+    const components = await customizationService.getComponents();
 
     return res.status(200).json({
       success: true,
@@ -195,8 +178,7 @@ export const createComponent = async (req, res) => {
   } catch (error) {
     if (
       error.message === "Component name is required" ||
-      error.message === "Valid cost impact is required" ||
-      error.message === "Restaurant ID is required"
+      error.message === "Valid cost impact is required"
     ) {
       return res.status(400).json({
         success: false,

@@ -61,15 +61,11 @@ export const createTable = async (data) => {
     throw new Error("Table number is required");
   }
 
-  if (!restaurantId) {
-    throw new Error("Restaurant ID is required");
-  }
-
   // Check for duplicate table number
   const existingTable = await prisma.table.findFirst({
     where: {
       tableNumber: tableNumber.trim(),
-      restaurantId,
+      restaurantId: restaurantId || null,
     },
   });
 
@@ -81,7 +77,7 @@ export const createTable = async (data) => {
     data: {
       tableNumber: tableNumber.trim(),
       capacity: capacity ? parseInt(capacity) : null,
-      restaurantId,
+      restaurantId: restaurantId || null,
     },
   });
 

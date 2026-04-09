@@ -309,13 +309,6 @@ export const getOrderStats = async (req, res) => {
   try {
     const { restaurantId } = req.query;
 
-    if (!restaurantId) {
-      return res.status(400).json({
-        success: false,
-        message: "Restaurant ID is required",
-      });
-    }
-
     const stats = await orderService.getOrderStats(restaurantId);
 
     return res.status(200).json({

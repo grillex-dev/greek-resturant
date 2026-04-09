@@ -8,7 +8,7 @@ import * as cartService from "./cart.service.js";
 export const getCart = async (req, res) => {
   try {
     const userId = req.userId || null;
-    const sessionId = req.sessionId || null;   // ← You'll pass this from middleware
+    const sessionId = req.sessionId || null;
 
     const cartItems = await cartService.getCart({ userId, sessionId });
     const totals = await cartService.getCartTotals({ userId, sessionId });
@@ -31,7 +31,7 @@ export const addToCart = async (req, res) => {
   try {
     const userId = req.userId || null;
     const sessionId = req.sessionId || null;
-    const { productId, quantity, customizations, note } = req.body;
+    const { productId, quantity, customizations, note, size } = req.body;
 
     const cartItem = await cartService.addToCart({
       userId,
@@ -40,6 +40,7 @@ export const addToCart = async (req, res) => {
       quantity,
       customizations,
       note,
+      size, 
     });
 
     return res.status(201).json({
@@ -49,7 +50,8 @@ export const addToCart = async (req, res) => {
     });
   } catch (error) {
     const status = error.message.includes("required") || 
-                   error.message.includes("at least 1") ? 400 : 
+                   error.message.includes("at least 1") ||
+                   error.message.includes("Invalid size") ? 400 : 
                    error.message.includes("not found") ? 404 : 500;
 
     return res.status(status).json({
@@ -67,9 +69,15 @@ export const updateCartItemQuantity = async (req, res) => {
     const userId = req.userId || null;
     const sessionId = req.sessionId || null;
     const { id } = req.params;
-    const { quantity, note } = req.body;
+    // ADDED: size extracted from body
+    const { quantity, note, size } = req.body;
 
-    const cartItem = await cartService.updateCartItemQuantity(id, { userId, sessionId }, { quantity, note });
+    // Passed size to service for price recalculation
+    const cartItem = await cartService.updateCartItemQuantity(
+      id, 
+      { userId, sessionId }, 
+      { quantity, note, size }
+    );
 
     return res.status(200).json({
       success: true,
@@ -77,11 +85,10 @@ export const updateCartItemQuantity = async (req, res) => {
       data: cartItem,
     });
   } catch (error) {
-    const status = error.message === "Cart item not found" ? 404 : 400;
+    const status = error.message.includes("not found") ? 404 : 400;
     return res.status(status).json({ success: false, message: error.message });
   }
 };
-
 /**
  * Remove item from cart
  * DELETE /api/cart/:id
@@ -123,9 +130,11 @@ export const clearCart = async (req, res) => {
  */
 export const getCartTotals = async (req, res) => {
   try {
-    const userId = req.userId;
+    // FIX: You were only passing userId, but the service expects an object { userId, sessionId }
+    const userId = req.userId || null;
+    const sessionId = req.sessionId || null;
 
-    const totals = await cartService.getCartTotals(userId);
+    const totals = await cartService.getCartTotals({ userId, sessionId });
 
     return res.status(200).json({
       success: true,

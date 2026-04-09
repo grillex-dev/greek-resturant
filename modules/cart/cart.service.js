@@ -135,12 +135,9 @@ export const addToCart = async (data) => {
   return cartItem;
 };
 
-/**
- * Update cart item - Supports both userId and sessionId
- */
 export const updateCartItemQuantity = async (cartItemId, identifier, updates) => {
   const { userId, sessionId } = identifier;
-  const { quantity, note, size } = updates;  // NEW: size
+  const { quantity, note, size } = updates;
 
   if (quantity !== undefined && quantity < 1) {
     throw new Error("Quantity must be at least 1");
@@ -148,16 +145,46 @@ export const updateCartItemQuantity = async (cartItemId, identifier, updates) =>
 
   const where = userId ? { id: cartItemId, userId } : { id: cartItemId, sessionId };
 
-  const existingItem = await prisma.cartItem.findFirst({ where });
+  // 1. Find existing item with its customizations
+  const existingItem = await prisma.cartItem.findFirst({
+    where,
+    include: { customizations: true }
+  });
 
   if (!existingItem) throw new Error("Cart item not found");
 
-  // If size is being updated, recalculate price
   const updateData = {
     quantity: quantity !== undefined ? quantity : undefined,
     note: note !== undefined ? (note?.trim() || null) : undefined,
-    size: size !== undefined ? (size || null) : undefined,  // NEW
   };
+
+  // 2. Recalculate price if size changes
+  if (size !== undefined && size !== existingItem.size) {
+    const product = await prisma.product.findUnique({
+      where: { id: existingItem.productId },
+      include: { sizes: true },
+    });
+
+    if (!product) throw new Error("Product not found");
+
+    // Start with the base price
+    let newFinalPrice = parseFloat(product.basePrice);
+
+    // Apply new size modifier
+    if (size) {
+      const productSize = product.sizes.find((ps) => ps.size === size);
+      if (!productSize) throw new Error("Size not available for this product");
+      newFinalPrice += parseFloat(productSize.priceModifier);
+    }
+
+    // Re-apply the price impacts of existing customizations
+    existingItem.customizations.forEach((cust) => {
+      newFinalPrice += parseFloat(cust.priceImpact);
+    });
+
+    updateData.size = size || null;
+    updateData.finalPriceSnapshot = newFinalPrice;
+  }
 
   // Remove undefined values
   Object.keys(updateData).forEach(key => updateData[key] === undefined && delete updateData[key]);
@@ -168,7 +195,7 @@ export const updateCartItemQuantity = async (cartItemId, identifier, updates) =>
     include: {
       product: { 
         select: { id: true, name: true, imageUrl: true },
-        include: { sizes: true }  // NEW
+        include: { sizes: true }
       },
       customizations: true,
     },
@@ -176,6 +203,7 @@ export const updateCartItemQuantity = async (cartItemId, identifier, updates) =>
 
   return cartItem;
 };
+
 
 /**
  * Remove from cart - Supports both user and guest

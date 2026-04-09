@@ -117,7 +117,6 @@ export const createOrder = async (data) => {
     guestPhone,
   } = data;
 
-  if (!restaurantId) throw new Error("Restaurant ID is required");
   if (!fulfillmentType || !["DELIVERY", "PICKUP", "DINE_IN"].includes(fulfillmentType)) {
     throw new Error("Valid fulfillment type is required");
   }
@@ -142,7 +141,7 @@ export const createOrder = async (data) => {
       guestName: guestName || null,
       guestEmail: guestEmail || null,
       guestPhone: guestPhone || null,
-      restaurantId,
+      restaurantId: restaurantId || null,
       fulfillmentType,
       totalAmount: parseFloat(totalAmount),
       status: "PENDING",

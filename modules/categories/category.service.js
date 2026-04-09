@@ -1,14 +1,9 @@
 // modules/categories/category.service.js
 import prisma from "../../config/prisma.js";
 
-/**
- * Get all categories for a restaurant
- * @param {string} restaurantId - Restaurant ID
- * @returns {Promise<Array>} List of categories
- */
-export const getCategories = async (restaurantId) => {
+
+export const getCategories = async () => {
   const categories = await prisma.category.findMany({
-    where: { restaurantId },
     orderBy: { name: "asc" },
   });
   return categories;
@@ -38,26 +33,15 @@ export const getCategoryById = async (id) => {
   return category;
 };
 
-export const createCategory = async (name, restaurantId = null, imageData = {}) => {
+export const createCategory = async (name,  imageData = {}) => {
   if (!name || name.trim().length === 0) {
     throw new Error("Category name is required");
   }
 
-  // If restaurantId provided, check if restaurant exists
-  if (restaurantId) {
-    const restaurant = await prisma.restaurant.findUnique({
-      where: { id: restaurantId },
-    });
-
-    if (!restaurant) {
-      throw new Error("Restaurant not found");
-    }
-  }
  
   const existingCategory = await prisma.category.findFirst({
     where: {
       name: { equals: name.trim(), mode: "insensitive" },
-      restaurantId: restaurantId || null,
     },
   });
  
@@ -68,7 +52,6 @@ export const createCategory = async (name, restaurantId = null, imageData = {}) 
   const category = await prisma.category.create({
     data: {
       name: name.trim(),
-      restaurantId: restaurantId || null,
       imageUrl: imageData.imageUrl ?? null,
       imagePublicId: imageData.imagePublicId ?? null,
     },
@@ -96,7 +79,6 @@ export const updateCategory = async (id, data) => {
     const duplicate = await prisma.category.findFirst({
       where: {
         name: { equals: name.trim(), mode: "insensitive" },
-        restaurantId: existingCategory.restaurantId,
         NOT: { id },
       },
     });

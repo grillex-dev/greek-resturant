@@ -6,13 +6,12 @@ import prisma from "../../config/prisma.js";
 // ============================================
 
 /**
- * Get all extras for a restaurant
- * @param {string} restaurantId - Restaurant ID
+ * Get all extras
  * @returns {Promise<Array>} List of extras
  */
-export const getExtras = async (restaurantId) => {
+export const getExtras = async () => {
   const extras = await prisma.extra.findMany({
-    where: { restaurantId },
+    // Removed restaurantId filter
     include: {
       _count: {
         select: {
@@ -32,26 +31,22 @@ export const getExtras = async (restaurantId) => {
  * @returns {Promise<object>} Created extra
  */
 export const createExtra = async (data) => {
-  const { name, price, restaurantId } = data;
+  const { name, price } = data; // Removed restaurantId from destructuring
 
   // Validate inputs
   if (!name || name.trim().length === 0) {
     throw new Error("Extra name is required");
   }
 
-  if (!price || isNaN(parseFloat(price)) || parseFloat(price) < 0) {
+  if (price === undefined || isNaN(parseFloat(price)) || parseFloat(price) < 0) {
     throw new Error("Valid price is required");
-  }
-
-  if (!restaurantId) {
-    throw new Error("Restaurant ID is required");
   }
 
   const extra = await prisma.extra.create({
     data: {
       name: name.trim(),
       price: parseFloat(price),
-      restaurantId,
+      // Removed restaurantId assignment
     },
   });
 
@@ -67,7 +62,6 @@ export const createExtra = async (data) => {
 export const updateExtra = async (id, data) => {
   const { name, price } = data;
 
-  // Check if extra exists
   const existingExtra = await prisma.extra.findUnique({
     where: { id },
   });
@@ -106,7 +100,6 @@ export const updateExtra = async (id, data) => {
  * @returns {Promise<object>} Deleted extra
  */
 export const deleteExtra = async (id) => {
-  // Check if extra exists
   const existingExtra = await prisma.extra.findUnique({
     where: { id },
     include: {
@@ -118,7 +111,6 @@ export const deleteExtra = async (id) => {
     throw new Error("Extra not found");
   }
 
-  // Check if extra is used in products
   if (existingExtra.products.length > 0) {
     throw new Error("Cannot delete extra that is used in products");
   }
@@ -135,13 +127,12 @@ export const deleteExtra = async (id) => {
 // ============================================
 
 /**
- * Get all components for a restaurant
- * @param {string} restaurantId - Restaurant ID
+ * Get all components
  * @returns {Promise<Array>} List of components
  */
-export const getComponents = async (restaurantId) => {
+export const getComponents = async () => {
   const components = await prisma.component.findMany({
-    where: { restaurantId },
+    // Removed restaurantId filter
     include: {
       _count: {
         select: {
@@ -161,7 +152,7 @@ export const getComponents = async (restaurantId) => {
  * @returns {Promise<object>} Created component
  */
 export const createComponent = async (data) => {
-  const { name, costImpact, restaurantId } = data;
+  const { name, costImpact } = data; // Removed restaurantId from destructuring
 
   // Validate inputs
   if (!name || name.trim().length === 0) {
@@ -172,15 +163,11 @@ export const createComponent = async (data) => {
     throw new Error("Valid cost impact is required");
   }
 
-  if (!restaurantId) {
-    throw new Error("Restaurant ID is required");
-  }
-
   const component = await prisma.component.create({
     data: {
       name: name.trim(),
       costImpact: parseFloat(costImpact),
-      restaurantId,
+      // Removed restaurantId assignment
     },
   });
 
@@ -196,7 +183,6 @@ export const createComponent = async (data) => {
 export const updateComponent = async (id, data) => {
   const { name, costImpact } = data;
 
-  // Check if component exists
   const existingComponent = await prisma.component.findUnique({
     where: { id },
   });
@@ -235,7 +221,6 @@ export const updateComponent = async (id, data) => {
  * @returns {Promise<object>} Deleted component
  */
 export const deleteComponent = async (id) => {
-  // Check if component exists
   const existingComponent = await prisma.component.findUnique({
     where: { id },
     include: {
@@ -247,7 +232,6 @@ export const deleteComponent = async (id) => {
     throw new Error("Component not found");
   }
 
-  // Check if component is used in products
   if (existingComponent.products.length > 0) {
     throw new Error("Cannot delete component that is used in products");
   }

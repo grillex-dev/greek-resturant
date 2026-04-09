@@ -9,13 +9,6 @@ export const getTables = async (req, res) => {
   try {
     const { restaurantId } = req.query;
 
-    if (!restaurantId) {
-      return res.status(400).json({
-        success: false,
-        message: "Restaurant ID is required",
-      });
-    }
-
     const tables = await tableService.getTables(restaurantId);
 
     return res.status(200).json({
@@ -75,10 +68,7 @@ export const createTable = async (req, res) => {
       data: table,
     });
   } catch (error) {
-    if (
-      error.message === "Table number is required" ||
-      error.message === "Restaurant ID is required"
-    ) {
+    if (error.message === "Table number is required") {
       return res.status(400).json({
         success: false,
         message: error.message,

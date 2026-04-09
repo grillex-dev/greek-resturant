@@ -7,16 +7,7 @@ import * as categoryService from "./category.service.js";
  */
 export const getCategories = async (req, res) => {
   try {
-    const { restaurantId } = req.query;
-
-    if (!restaurantId) {
-      return res.status(400).json({
-        success: false,
-        message: "Restaurant ID is required",
-      });
-    }
-
-    const categories = await categoryService.getCategories(restaurantId);
+    const categories = await categoryService.getCategories();
 
     return res.status(200).json({
       success: true,
@@ -68,12 +59,12 @@ export const getCategoryById = async (req, res) => {
  
 export const createCategory = async (req, res) => {
   try {
-    const { name, restaurantId } = req.body;
+    const { name } = req.body;
  
     // If the upload middleware ran and found a file, it attaches req.uploadedImage
     const { imageUrl, imagePublicId } = req.uploadedImage ?? {};
  
-    const category = await categoryService.createCategory(name, restaurantId, {
+    const category = await categoryService.createCategory(name, {
       imageUrl,
       imagePublicId,
     });
@@ -86,7 +77,6 @@ export const createCategory = async (req, res) => {
   } catch (error) {
     if (
       error.message === "Category name is required" ||
-      error.message === "Restaurant ID is required" ||
       error.message === "Only image files are allowed"
     ) {
       return res.status(400).json({ success: false, message: error.message });
