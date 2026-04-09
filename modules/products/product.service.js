@@ -13,6 +13,8 @@ import prisma from "../../config/prisma.js";
 export const getProducts = async (filters) => {
   const {  categoryId, search, isActive } = filters;
 
+  let where = {};
+
   if (categoryId) {
     where.categoryId = categoryId;
   }
