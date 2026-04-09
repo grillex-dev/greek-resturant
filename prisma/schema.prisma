@@ -181,7 +181,7 @@ model ProductSize {
 
 model Component {
   id           String  @id @default(uuid())
-  name         String
+  name         String  @unique
   costImpact   Decimal @db.Decimal(10,2)
 
 
@@ -207,7 +207,7 @@ model ProductComponent {
 
 model Extra {
   id           String  @id @default(uuid())
-  name         String
+  name         String  @unique
   price        Decimal @db.Decimal(10,2)
 
 
