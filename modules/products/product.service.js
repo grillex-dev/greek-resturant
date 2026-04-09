@@ -141,6 +141,9 @@ export const createProduct = async (data) => {
   const validSizes = ["SMALL", "MEDIUM", "LARGE", "EXTRA_LARGE"];
   if (sizes?.length > 0) {
     for (const size of sizes) {
+      if (!size.size) {
+        throw new Error("Size is required for each size entry");
+      }
       if (!validSizes.includes(size.size)) {
         throw new Error(`Invalid size: ${size.size}`);
       }
