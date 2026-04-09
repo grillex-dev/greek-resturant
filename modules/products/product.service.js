@@ -11,11 +11,7 @@ import prisma from "../../config/prisma.js";
  * @returns {Promise<Array>} List of products
  */
 export const getProducts = async (filters) => {
-  const { restaurantId, categoryId, search, isActive } = filters;
-
-  const where = {
-    restaurantId,
-  };
+  const {  categoryId, search, isActive } = filters;
 
   if (categoryId) {
     where.categoryId = categoryId;
@@ -111,7 +107,6 @@ export const createProduct = async (data) => {
     imageUrl,
     imagePublicId,
     categoryId,
-    restaurantId,
     componentIds,
     extraIds,
     sizes,  // NEW: Array of { size: "SMALL", priceModifier: 0 }
@@ -130,16 +125,6 @@ export const createProduct = async (data) => {
     throw new Error("Category ID is required");
   }
 
-  // If restaurantId provided, check if restaurant exists
-  if (restaurantId) {
-    const restaurant = await prisma.restaurant.findUnique({
-      where: { id: restaurantId },
-    });
-
-    if (!restaurant) {
-      throw new Error("Restaurant not found");
-    }
-  }
 
   // Check if category exists
   const category = await prisma.category.findFirst({
@@ -171,7 +156,6 @@ export const createProduct = async (data) => {
       imageUrl,
       imagePublicId,
       categoryId,
-      restaurantId: restaurantId || null,
       components: componentIds?.length
         ? {
             create: componentIds.map((componentId) => ({

@@ -57,7 +57,6 @@ export const createOrder = async (req, res) => {
     const sessionId = req.sessionId || null;        // ← Comes from guest middleware
 
     const {
-      restaurantId,
       fulfillmentType,
       fulfillmentDetails,
       guestName,
@@ -79,7 +78,6 @@ export const createOrder = async (req, res) => {
     const order = await orderService.createOrder({
       userId,
       sessionId,                    // passed for logging/tracking
-      restaurantId,
       fulfillmentType,
       fulfillmentDetails,
       cartItems,
@@ -307,9 +305,8 @@ export const rejectOrder = async (req, res) => {
  */
 export const getOrderStats = async (req, res) => {
   try {
-    const { restaurantId } = req.query;
 
-    const stats = await orderService.getOrderStats(restaurantId);
+    const stats = await orderService.getOrderStats();
 
     return res.status(200).json({
       success: true,

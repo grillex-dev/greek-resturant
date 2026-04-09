@@ -107,7 +107,6 @@ export const createOrder = async (data) => {
   const {
     userId,
     sessionId,
-    restaurantId,
     fulfillmentType,
     fulfillmentDetails,
     cartItems,
@@ -141,7 +140,6 @@ export const createOrder = async (data) => {
       guestName: guestName || null,
       guestEmail: guestEmail || null,
       guestPhone: guestPhone || null,
-      restaurantId: restaurantId || null,
       fulfillmentType,
       totalAmount: parseFloat(totalAmount),
       status: "PENDING",
@@ -283,33 +281,28 @@ export const rejectOrder = async (orderId, reason = null) => {
  * @param {string} restaurantId - Restaurant ID
  * @returns {Promise<object>} Order statistics
  */
-export const getOrderStats = async (restaurantId) => {
+export const getOrderStats = async () => {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
   const [totalOrders, todayOrders, pendingOrders, completedOrders, cancelledOrders] = await Promise.all([
-    prisma.order.count({ where: { restaurantId } }),
     prisma.order.count({
       where: {
-        restaurantId,
         createdAt: { gte: today },
       },
     }),
     prisma.order.count({
       where: {
-        restaurantId,
         status: { in: ["PENDING", "CONFIRMED", "PREPARING", "READY"] },
       },
     }),
     prisma.order.count({
       where: {
-        restaurantId,
         status: "COMPLETED",
       },
     }),
     prisma.order.count({
       where: {
-        restaurantId,
         status: "CANCELLED",
       },
     }),
@@ -318,7 +311,6 @@ export const getOrderStats = async (restaurantId) => {
   // Calculate revenue
   const revenue = await prisma.order.aggregate({
     where: {
-      restaurantId,
       status: "COMPLETED",
     },
     _sum: {

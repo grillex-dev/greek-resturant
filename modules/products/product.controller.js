@@ -26,10 +26,10 @@ const parseProductBody = (body) => {
  */
 export const getProducts = async (req, res) => {
   try {
-    const { restaurantId, categoryId, search, isActive } = req.query;
+    const {  categoryId, search, isActive } = req.query;
 
     const filters = {
-      restaurantId,
+      
       categoryId,
       search,
       isActive: isActive === "true" ? true : isActive === "false" ? false : undefined,
