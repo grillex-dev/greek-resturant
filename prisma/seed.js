@@ -58,10 +58,10 @@ async function main() {
     });
 
     const mainDishes = await prisma.category.create({
-      data: { name: "Main Dishes", restaurantId: restaurant.id },
+      data: { name: "Main Dishes" },
     });
     const sides = await prisma.category.create({
-      data: { name: "Sides", restaurantId: restaurant.id },
+      data: { name: "Sides"  },
     });
 
     // Products
@@ -71,7 +71,6 @@ async function main() {
         description: "Served with pita, tzatziki, and fries",
         basePrice: 12.99,
         categoryId: mainDishes.id,
-        restaurantId: restaurant.id,
         isActive: true,
         // NEW: Seed Sizes for the Gyro
         sizes: {
