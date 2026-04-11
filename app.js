@@ -11,7 +11,7 @@ import tableRoutes from "./modules/tables/table.router.js";
 import userRoutes from "./modules/users/user.router.js";
 import adminUserRoutes from "./modules/admin-users/admin-user.router.js";
 import customizationRoutes from "./modules/customizations/customization.router.js";
-import restaurantRoutes from "./modules/restaurant/restaurant.router.js";
+// import restaurantRoutes from "./modules/restaurant/restaurant.router.js";
 
 const app = express();
 
@@ -63,6 +63,6 @@ app.use("/api/tables", tableRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/admin/users", adminUserRoutes);
 app.use("/api/customizations", customizationRoutes);
-app.use("/api/restaurants", restaurantRoutes);
+// app.use("/api/restaurants", restaurantRoutes);
 
 export default app;
