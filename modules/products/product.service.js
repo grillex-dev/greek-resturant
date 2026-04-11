@@ -11,9 +11,9 @@ import prisma from "../../config/prisma.js";
  * @returns {Promise<Array>} List of products
  */
 export const getProducts = async (filters) => {
-  const {  categoryId, search, isActive } = filters;
+  const { categoryId, search, isActive } = filters;
 
-  let where = {};
+  const where = {};
 
   if (categoryId) {
     where.categoryId = categoryId;
@@ -141,9 +141,6 @@ export const createProduct = async (data) => {
   const validSizes = ["SMALL", "MEDIUM", "LARGE", "EXTRA_LARGE"];
   if (sizes?.length > 0) {
     for (const size of sizes) {
-      if (!size.size) {
-        throw new Error("Size is required for each size entry");
-      }
       if (!validSizes.includes(size.size)) {
         throw new Error(`Invalid size: ${size.size}`);
       }

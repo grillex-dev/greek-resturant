@@ -10,8 +10,11 @@ import prisma from "../../config/prisma.js";
 export const getUserOrders = async (userId, options = {}) => {
   const { status, limit = 20, offset = 0 } = options;
 
+  const where = { userId };
+  if (status) where.status = status;
+
   const orders = await prisma.order.findMany({
-    where: { userId },
+    where,
     include: {
       items: { include: { customizations: true } },
       fulfillment: true,
@@ -285,27 +288,25 @@ export const getOrderStats = async () => {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  const [totalOrders, todayOrders, pendingOrders, completedOrders, cancelledOrders] = await Promise.all([
+  const [todayOrders, pendingOrders, completedOrders, cancelledOrders, totalOrders] = await Promise.all([
+    // Orders placed today
     prisma.order.count({
-      where: {
-        createdAt: { gte: today },
-      },
+      where: { createdAt: { gte: today } },
     }),
+    // Orders currently active (PENDING, CONFIRMED, PREPARING, READY)
     prisma.order.count({
-      where: {
-        status: { in: ["PENDING", "CONFIRMED", "PREPARING", "READY"] },
-      },
+      where: { status: { in: ["PENDING", "CONFIRMED", "PREPARING", "READY"] } },
     }),
+    // All-time completed orders
     prisma.order.count({
-      where: {
-        status: "COMPLETED",
-      },
+      where: { status: "COMPLETED" },
     }),
+    // All-time cancelled orders
     prisma.order.count({
-      where: {
-        status: "CANCELLED",
-      },
+      where: { status: "CANCELLED" },
     }),
+    // All-time total orders
+    prisma.order.count(),
   ]);
 
   // Calculate revenue

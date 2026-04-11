@@ -19,7 +19,7 @@ router.post(
 );
  
 router.put(
-  "/categories/:id",
+  "/:id",
   authenticate,
   authorize("ADMIN"),
   uploadCategoryImage,   // optional – only overwrites image when a new file is sent

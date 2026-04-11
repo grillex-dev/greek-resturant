@@ -2,19 +2,24 @@
 import { Router } from "express";
 import * as orderController from "./order.controller.js";
 import { authenticate, authorize } from "../auth/auth.middleware.js";
-
+import { attachSession } from "../middlewares/session.middleware.js";
+ 
 const router = Router();
-
+ 
 // ====================== PUBLIC / GUEST ROUTES ======================
-
-// Guest + Authenticated users can create order
-router.post("/", orderController.createOrder);   // ← Removed authenticate middleware
-
-// Authenticated customer routes
-router.get("/", authenticate, orderController.getUserOrders);
-router.get("/:id", authenticate, orderController.getOrderById);
-
+ 
+// attachSession ensures req.sessionId is always set for order creation,
+// whether the user is a guest or authenticated.
+// authenticate is NOT applied here so guests are not blocked.
+router.post("/", attachSession, orderController.createOrder);
+ 
+// Authenticated customer routes — session is also attached so the controller
+// can see both identifiers if needed (e.g. merging guest history on login)
+router.get("/", attachSession, authenticate, orderController.getUserOrders);
+router.get("/:id", attachSession, authenticate, orderController.getOrderById);
+ 
 // ====================== ADMIN ROUTES ======================
+// Admins operate server-side; no session cookie needed for their queries.
 router.get(
   "/admin/all",
   authenticate,
@@ -51,5 +56,5 @@ router.post(
   authorize("ADMIN"),
   orderController.rejectOrder
 );
-
+ 
 export default router;

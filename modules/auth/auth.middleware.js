@@ -84,6 +84,12 @@ export const authenticate = async (req, res, next) => {
  * Use after authenticate middleware
  * @param {...string} roles - Allowed roles
  */
+
+/**this could be seeded by roles and permissions encrypted in a way that stores
+ * the role and permissions in the token, and then we can just check the permissions from the token 
+ * 
+ *  but for simplicity we will just check the role from the database
+ */
 export const authorize = (...roles) => {
   return (req, res, next) => {
     if (!req.user) {

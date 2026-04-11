@@ -193,9 +193,8 @@ export const updateCartItemQuantity = async (cartItemId, identifier, updates) =>
     where: { id: cartItemId },
     data: updateData,
     include: {
-      product: { 
+      product: {
         select: { id: true, name: true, imageUrl: true },
-        include: { sizes: true }
       },
       customizations: true,
     },
