@@ -1,0 +1,739 @@
+{
+  "categories": [
+    {
+      "name": "Breakfast",
+      "products": [
+        {
+          "name": "Cheese Manakish",
+          "description": "Mix Mozzarella & Feta Cheese with Parsley and Onion.",
+          "basePrice": 10.00
+        },
+        {
+          "name": "Zatar Manakish",
+          "description": "Middle Eastern Thyme Herb Blend with Sesame, Mozzarella Cheese.",
+          "basePrice": 10.00
+        },
+        {
+          "name": "Cheese and Ham Manakish",
+          "description": "Mozzarella Cheese & Ham",
+          "basePrice": 12.00
+        },
+        {
+          "name": "Pepperoni Manakish",
+          "description": "Tomato Sauce, Mozzarella Cheese, Pepperoni.",
+          "basePrice": 12.00
+        },
+        {
+          "name": "Ground Beef with Egg Manakish",
+          "description": "Ground Beef, Egg.",
+          "basePrice": 14.00
+        },
+        {
+          "name": "Spinach & Feta Cheese Manakish",
+          "description": "Spinach, Onion with Feta & Mozzarella Cheese.",
+          "basePrice": 14.00
+        },
+        {
+          "name": "Plain Waffle",
+          "description": "Make it your way",
+          "basePrice": 12.00
+        },
+        {
+          "name": "Sunny Side Up",
+          "description": "2 Eggs",
+          "basePrice": 10.00
+        },
+        {
+          "name": "Scrambled Eggs",
+          "description": "2 Eggs",
+          "basePrice": 10.00
+        },
+        {
+          "name": "Omelette",
+          "description": "2 Eggs",
+          "basePrice": 12.00
+        },
+        {
+          "name": "Cheese Omelette",
+          "description": "2 Eggs",
+          "basePrice": 15.00
+        },
+        {
+          "name": "Chicken Hotdogs",
+          "description": "2 Pieces",
+          "basePrice": 6.00
+        },
+        {
+          "name": "Bacon",
+          "description": "2 Slices",
+          "basePrice": 6.00
+        },
+        {
+          "name": "Ham",
+          "description": "",
+          "basePrice": 6.00
+        },
+        {
+          "name": "Hash Brown",
+          "description": "",
+          "basePrice": 5.00
+        },
+        {
+          "name": "Baked Beans",
+          "description": "",
+          "basePrice": 4.00
+        },
+        {
+          "name": "Feta Cheese",
+          "description": "",
+          "basePrice": 5.00
+        },
+        {
+          "name": "Seasonal Salad",
+          "description": "",
+          "basePrice": 7.00
+        },
+        {
+          "name": "Toast Bread",
+          "description": "",
+          "basePrice": 2.00
+        },
+        {
+          "name": "Grilled Tomato",
+          "description": "",
+          "basePrice": 4.00
+        },
+        {
+          "name": "Grilled Pepper",
+          "description": "",
+          "basePrice": 4.00
+        },
+        {
+          "name": "Grilled Onions",
+          "description": "",
+          "basePrice": 4.00
+        },
+        {
+          "name": "Mushroom",
+          "description": "",
+          "basePrice": 4.00
+        }
+      ]
+    },
+    {
+      "name": "Appetizers",
+      "products": [
+        {
+          "name": "Plain Chicken Wings",
+          "description": "Deep Fried 8 PCS of Chicken Wings.",
+          "basePrice": 24.00
+        },
+        {
+          "name": "Chicken Tender",
+          "description": "Deep Fried 6 PCS Marinated Chicken Strips.",
+          "basePrice": 29.00
+        },
+        {
+          "name": "Mozzarella Sticks",
+          "description": "Home Made 4 Fried Mozzarella Sticks.",
+          "basePrice": 22.00
+        },
+        {
+          "name": "Fried Shrimp",
+          "description": "Marinated & Breaded 6 PCS of Shrimp.",
+          "basePrice": 39.00
+        },
+        {
+          "name": "French Fries",
+          "description": "Plain or Seasoned Fries",
+          "basePrice": 13.00
+        },
+        {
+          "name": "Cheese Fries",
+          "description": "Cheddar Cheese Sauce",
+          "basePrice": 17.00
+        },
+        {
+          "name": "Dynamite Fries",
+          "description": "Bacon, Cheese & Jalapenos.",
+          "basePrice": 26.00
+        },
+        {
+          "name": "Hummus",
+          "description": "Served with Pita Bread - Plain",
+          "basePrice": 20.00
+        },
+        {
+          "name": "Hummus with Chicken",
+          "description": "",
+          "basePrice": 32.00
+        },
+        {
+          "name": "Hummus with Lamb",
+          "description": "",
+          "basePrice": 35.00
+        },
+        {
+          "name": "Hummus with Falafel",
+          "description": "",
+          "basePrice": 29.00
+        },
+        {
+          "name": "Rice with Vegetables",
+          "description": "",
+          "basePrice": 10.00
+        },
+        {
+          "name": "Lentil Soup",
+          "description": "",
+          "basePrice": 20.00
+        }
+      ]
+    },
+    {
+      "name": "Salads",
+      "products": [
+        {
+          "name": "Greek Salad",
+          "description": "Mixed Greens, Cucumber, Tomato, Red Onion, Olives, Mint, Feta Cheese, Capers, Herbs, Vinegar, Lemon Oil Dressing.",
+          "basePrice": 34.00
+        },
+        {
+          "name": "Chicken Greek Salad",
+          "description": "Greek Salad, Grilled Chicken, Garlic Sauce, Tzatziki Sauce.",
+          "basePrice": 52.00
+        },
+        {
+          "name": "Lamb Greek Salad",
+          "description": "Greek Salad, Grilled Lamb, Garlic Sauce, Tzatziki Sauce.",
+          "basePrice": 55.00
+        },
+        {
+          "name": "Shrimp Greek Salad",
+          "description": "Greek Salad, Fried Shrimp, Garlic Sauce, Tartar Sauce.",
+          "basePrice": 58.00
+        },
+        {
+          "name": "Falafel Greek Salad",
+          "description": "Greek Salad, 5 PCS of Falafel, Tahini Sauce, Hummus.",
+          "basePrice": 50.00
+        },
+        {
+          "name": "Chicken Cesar Salad",
+          "description": "Grilled Chicken, Lettuce, Croutons, Sundried Tomatoes, Parmesan Cheese, Caesar Dressing.",
+          "basePrice": 44.00
+        },
+        {
+          "name": "Beetroot with Feta Salad",
+          "description": "Roasted Beetroot, Mixed Greens, Feta Cheese, Parsley, Garlic, Red Onion, Lemon Oil Dressing.",
+          "basePrice": 38.00
+        },
+        {
+          "name": "Coleslaw Salad",
+          "description": "Cabbage, Carrot, Mayo, Raisin.",
+          "basePrice": 20.00
+        }
+      ]
+    },
+    {
+      "name": "Meals",
+      "products": [
+        {
+          "name": "Gyro Plate",
+          "description": "Lamb Meat, Rice with Vegetables, Green Salad, Garlic Sauce, Tzatziki Sauce.",
+          "basePrice": 48.00
+        },
+        {
+          "name": "Grilled Chicken Plate",
+          "description": "Grilled Chicken, Rice with Vegetables, Green Salad, Garlic Sauce, Tzatziki Sauce.",
+          "basePrice": 45.00
+        },
+        {
+          "name": "Sheesh Plate (Chicken)",
+          "description": "Chicken Breast, Fries, Grilled Veggies, Coleslaw Salad, Garlic Sauce, Pita Bread.",
+          "basePrice": 52.00
+        },
+        {
+          "name": "Fish and Chips Plate",
+          "description": "Fried Fish, French Fries, Green Salad, Tartar Sauce.",
+          "basePrice": 56.00
+        },
+        {
+          "name": "Fajita Plate",
+          "description": "Chicken Fajitas, French Fries, Green Salad, Guacamole Sauce.",
+          "basePrice": 48.00
+        }
+      ]
+    },
+    {
+      "name": "Noodles & Lasagna",
+      "products": [
+        {
+          "name": "Chicken Teriyaki Noodles",
+          "description": "Grilled Chicken, Broccoli, Carrots, Bell Peppers, Cabbage, Spring Onion, Garlic, Sesame Seeds and Home Made Teriyaki Sauce.",
+          "basePrice": 34.00
+        },
+        {
+          "name": "Beef Noodles",
+          "description": "Tenderloin Beef, Onion, Peppers, Cabbage, Sesame Seeds, Sweet Chili and Soy Garlic Sauce.",
+          "basePrice": 42.00
+        },
+        {
+          "name": "Vegetables Noodles",
+          "description": "Broccoli, Carrots, Zucchini, Bell Peppers, Red Onion, Cilantro, Garlic, Sesame Sauce, Cabbage, Sweet Chili, Soy Sauce and Sesame Oil.",
+          "basePrice": 34.00
+        },
+        {
+          "name": "Shrimp Noodles",
+          "description": "Sauteed Shrimp, Bell Peppers, Carrots, Garlic, Green Onion, Cabbage, Sesame Seeds, Oyster Sauce and Sesame Oil.",
+          "basePrice": 44.00
+        },
+        {
+          "name": "Beef Lasagna",
+          "description": "Ground Beef, White Sauce, Mozzarella Cheese, Tomato Sauce.",
+          "basePrice": 44.00
+        }
+      ]
+    },
+    {
+      "name": "Wraps & Sandwiches",
+      "products": [
+        {
+          "name": "Gyros (Souvlaki) Pita",
+          "description": "Lamb Gyros, Parsley, Onion, Tomato, Fries and Homemade Tzatziki Sauce, Garlic Sauce. Greek Pita Bread.",
+          "basePrice": 37.00
+        },
+        {
+          "name": "Chicken (Kalamaki) Pita",
+          "description": "Traditional Roast Chicken, Parsley, Onions, Tomatoes, Fries and Homemade Tzatziki Sauce, Garlic Sauce. Greek Pita Bread.",
+          "basePrice": 34.00
+        },
+        {
+          "name": "Sheesh Wrap (Chicken)",
+          "description": "Chicken Breast, Garlic Sauce, Tomato, Pickles, Coleslaw Salad, Fries Inside. Tortilla.",
+          "basePrice": 38.00
+        },
+        {
+          "name": "Chicken Fajita Wrap",
+          "description": "Grilled Chicken, Bell Peppers, Onions, Soy Sauce, Mozzarella Cheese and Homemade Guacamole Sauce. Tortilla.",
+          "basePrice": 34.00
+        },
+        {
+          "name": "Chicken Tender Wrap",
+          "description": "Fried Chicken Tenders, Fries, Pickles, Coleslaw, Cocktail Sauce. Tortilla.",
+          "basePrice": 34.00
+        },
+        {
+          "name": "Fried Shrimp Wrap",
+          "description": "Fried Shrimp, Lettuce, Fries, Pickles, Homemade Tartar Sauce. Tortilla.",
+          "basePrice": 45.00
+        },
+        {
+          "name": "Fish Wrap",
+          "description": "Fried Fish Fillet, Lettuce, Tomato, Pickles, Tartar Sauce, Cocktail Sauce. Tortilla.",
+          "basePrice": 43.00
+        },
+        {
+          "name": "Philly Cheese Steak Sandwich",
+          "description": "Tenderloin Beef, Onions, Mushrooms, Pickles, Lettuce, Soy Sauce and Mozzarella Cheese. Sandwich Bread.",
+          "basePrice": 42.00
+        },
+        {
+          "name": "Falafel Wrap",
+          "description": "Traditional Falafel, Lettuce, Tomatoes, Parsley, Pickles and Tahini Sauce. Tortilla.",
+          "basePrice": 30.00
+        },
+        {
+          "name": "Grilled Veggie Wrap",
+          "description": "Grilled Onion, Grilled Pepper, Grilled Mushroom, Hummus, Lettuce, Tomato, Mixed Cheese, Tahini Sauce. Tortilla.",
+          "basePrice": 30.00
+        }
+      ]
+    },
+    {
+      "name": "Burgers",
+      "products": [
+        {
+          "name": "Classic Burger",
+          "description": "Beef Patty, Lettuce, Tomatoes, Onions, Pickles, Cocktail Sauce, Cheddar Cheese.",
+          "basePrice": 20.00
+        },
+        {
+          "name": "Fried Chicken Burger",
+          "description": "Fried Chicken, Lettuce, Pickles, Tomatoes, Tartar Sauce, Cheddar Cheese.",
+          "basePrice": 24.00
+        },
+        {
+          "name": "Chicken Caesar Burger",
+          "description": "Grilled Chicken, Lettuce, Sundried Tomato, Caesar Dressing.",
+          "basePrice": 26.00
+        },
+        {
+          "name": "Bacon & Egg Burger",
+          "description": "Bacon, Egg, Lettuce, Pickles, Onions, Relish Sauce.",
+          "basePrice": 20.00
+        },
+        {
+          "name": "Swiss Mushroom Burger",
+          "description": "Special Home Made Beef Patty, Caramelized Onion, Mushroom with Swiss Sauce, Parmesan Cheese.",
+          "basePrice": 34.00
+        },
+        {
+          "name": "Mexican Burger",
+          "description": "Special Home Made Beef Patty, Mixed Peppers, Guacamole Sauce, Onions, Nachos.",
+          "basePrice": 32.00
+        },
+        {
+          "name": "BBQ Burger",
+          "description": "Special Home Made Beef Patty, Grilled Onions, Grilled Peppers, Pickles, BBQ Sauce.",
+          "basePrice": 30.00
+        },
+        {
+          "name": "Veggie Burger",
+          "description": "Veggie Patty, Lettuce, Tomato, Cocktail Sauce.",
+          "basePrice": 25.00
+        }
+      ]
+    },
+    {
+      "name": "Pizza",
+      "products": [
+        {
+          "name": "Cheese Pizza",
+          "description": "Mozzarella Cheese, Tomato Sauce, Oregano.",
+          "basePrice": 40.00,
+          "sizes": [
+            { "size": "MEDIUM", "priceModifier": 0.00 },
+            { "size": "LARGE", "priceModifier": 25.00 }
+          ]
+        },
+        {
+          "name": "Pepperoni Pizza",
+          "description": "Mozzarella Cheese, Pepperoni, Tomato Sauce.",
+          "basePrice": 48.00,
+          "sizes": [
+            { "size": "MEDIUM", "priceModifier": 0.00 },
+            { "size": "LARGE", "priceModifier": 30.00 }
+          ]
+        },
+        {
+          "name": "Alfredo Chicken Pizza",
+          "description": "Chicken, Alfredo White Sauce, Mushroom, Mozzarella and Parmesan Cheese.",
+          "basePrice": 50.00,
+          "sizes": [
+            { "size": "MEDIUM", "priceModifier": 0.00 },
+            { "size": "LARGE", "priceModifier": 30.00 }
+          ]
+        },
+        {
+          "name": "BBQ Chicken Pizza",
+          "description": "BBQ Chicken, BBQ Sauce, Mozzarella Cheese, Red Onion.",
+          "basePrice": 50.00,
+          "sizes": [
+            { "size": "MEDIUM", "priceModifier": 0.00 },
+            { "size": "LARGE", "priceModifier": 30.00 }
+          ]
+        },
+        {
+          "name": "Lamb Pizza",
+          "description": "Tomato Sauce, Mozzarella Cheese, Lamb.",
+          "basePrice": 52.00,
+          "sizes": [
+            { "size": "MEDIUM", "priceModifier": 0.00 },
+            { "size": "LARGE", "priceModifier": 30.00 }
+          ]
+        },
+        {
+          "name": "Grilled Chicken Pizza",
+          "description": "Tomato Sauce, Mozzarella Cheese, Grilled Chicken.",
+          "basePrice": 48.00,
+          "sizes": [
+            { "size": "MEDIUM", "priceModifier": 0.00 },
+            { "size": "LARGE", "priceModifier": 30.00 }
+          ]
+        },
+        {
+          "name": "Greek Pizza",
+          "description": "Tomato Sauce, Mozzarella Cheese, Feta Cheese, Tomato, Red Onion, Oregano, Basil.",
+          "basePrice": 50.00,
+          "sizes": [
+            { "size": "MEDIUM", "priceModifier": 0.00 },
+            { "size": "LARGE", "priceModifier": 30.00 }
+          ]
+        },
+        {
+          "name": "Margherita Pizza",
+          "description": "Mozzarella Cheese, Tomato Sauce, Oregano, Fresh Tomato, Basil.",
+          "basePrice": 45.00,
+          "sizes": [
+            { "size": "MEDIUM", "priceModifier": 0.00 },
+            { "size": "LARGE", "priceModifier": 30.00 }
+          ]
+        },
+        {
+          "name": "Meat Lovers Pizza",
+          "description": "Tomato Sauce, Mozzarella Cheese, Sausage, Pepperoni, Bacon, Ham.",
+          "basePrice": 60.00,
+          "sizes": [
+            { "size": "MEDIUM", "priceModifier": 0.00 },
+            { "size": "LARGE", "priceModifier": 33.00 }
+          ]
+        },
+        {
+          "name": "Chicken Pesto Pizza",
+          "description": "Chicken, Pesto Sauce, Mozzarella Cheese, Feta Cheese, Sundried Tomato.",
+          "basePrice": 53.00,
+          "sizes": [
+            { "size": "MEDIUM", "priceModifier": 0.00 },
+            { "size": "LARGE", "priceModifier": 30.00 }
+          ]
+        },
+        {
+          "name": "Buffalo Chicken Pizza",
+          "description": "Chicken, Mozzarella Cheese, Buffalo Spicy Tomato Sauce, Jalapeno.",
+          "basePrice": 50.00,
+          "sizes": [
+            { "size": "MEDIUM", "priceModifier": 0.00 },
+            { "size": "LARGE", "priceModifier": 30.00 }
+          ]
+        },
+        {
+          "name": "Hawaiian Pizza",
+          "description": "Ham, Pineapple, Mozzarella Cheese, Tomato Sauce.",
+          "basePrice": 48.00,
+          "sizes": [
+            { "size": "MEDIUM", "priceModifier": 0.00 },
+            { "size": "LARGE", "priceModifier": 30.00 }
+          ]
+        },
+        {
+          "name": "Veggie Pizza",
+          "description": "Mushroom, Olive, Pepper, Tomato, Onion, Mozzarella Cheese, Tomato Sauce.",
+          "basePrice": 53.00,
+          "sizes": [
+            { "size": "MEDIUM", "priceModifier": 0.00 },
+            { "size": "LARGE", "priceModifier": 30.00 }
+          ]
+        },
+        {
+          "name": "Sausage Pizza",
+          "description": "Mozzarella Cheese, Tomato Sauce, Sausage, Mushroom.",
+          "basePrice": 52.00,
+          "sizes": [
+            { "size": "MEDIUM", "priceModifier": 0.00 },
+            { "size": "LARGE", "priceModifier": 30.00 }
+          ]
+        },
+        {
+          "name": "Za'tar & Cheese Pizza",
+          "description": "Olive Oil, Za'tar, Mozzarella Cheese.",
+          "basePrice": 42.00,
+          "sizes": [
+            { "size": "MEDIUM", "priceModifier": 0.00 },
+            { "size": "LARGE", "priceModifier": 25.00 }
+          ]
+        },
+        {
+          "name": "Calzone Pizza",
+          "description": "Mozzarella Cheese, Tomato Sauce.",
+          "basePrice": 40.00
+        }
+      ]
+    },
+    {
+      "name": "Sweets",
+      "products": [
+        {
+          "name": "Strawberry Yogurt",
+          "description": "Homemade Greek Yogurt, Granola, Dried Fruit, Strawberry Puree, Nuts.",
+          "basePrice": 19.00
+        },
+        {
+          "name": "Blueberry Yogurt",
+          "description": "Homemade Greek Yogurt, Granola, Dried Fruit, Blueberry Puree, Nuts.",
+          "basePrice": 19.00
+        },
+        {
+          "name": "Mix Berries Yogurt",
+          "description": "Homemade Greek Yogurt, Granola, Dried Fruit, Berries Puree, Nuts.",
+          "basePrice": 19.00
+        },
+        {
+          "name": "Peanut Yogurt",
+          "description": "Homemade Greek Yogurt, Granola, Dried Fruit, Peanut Butter, Nuts.",
+          "basePrice": 19.00
+        },
+        {
+          "name": "Strawberry Chia",
+          "description": "Chia Pudding, Strawberry Puree.",
+          "basePrice": 24.00
+        },
+        {
+          "name": "Blueberry Chia",
+          "description": "Chia Pudding, Blueberry Puree.",
+          "basePrice": 24.00
+        },
+        {
+          "name": "Mix Berries Chia",
+          "description": "Chia Pudding, Mix Berries Puree.",
+          "basePrice": 24.00
+        },
+        {
+          "name": "Peanut Chia",
+          "description": "Chia Pudding, Peanut Butter.",
+          "basePrice": 24.00
+        },
+        {
+          "name": "Strawberry Cheese Cake",
+          "description": "Creamy Cheese, Toasted Biscuits, Strawberry Puree, Coconut.",
+          "basePrice": 29.00
+        },
+        {
+          "name": "Blueberry Cheese Cake",
+          "description": "Creamy Cheese, Toasted Biscuits, Blueberry Puree.",
+          "basePrice": 29.00
+        },
+        {
+          "name": "Mix Berries Cheese Cake",
+          "description": "Creamy Cheese, Toasted Biscuits, Berries Puree.",
+          "basePrice": 29.00
+        },
+        {
+          "name": "Peanut Cheese Cake",
+          "description": "Creamy Cheese, Toasted Biscuits, Peanut Butter.",
+          "basePrice": 29.00
+        },
+        {
+          "name": "Walnut Baklava",
+          "description": "",
+          "basePrice": 28.00
+        }
+      ]
+    },
+    {
+      "name": "Greek Protein",
+      "products": [
+        {
+          "name": "Strawberry Greek Protein",
+          "description": "Home Made Greek Yogurt Base",
+          "basePrice": 24.00
+        },
+        {
+          "name": "Blueberry Greek Protein",
+          "description": "Home Made Greek Yogurt Base",
+          "basePrice": 24.00
+        },
+        {
+          "name": "Mix Berries Greek Protein",
+          "description": "Home Made Greek Yogurt Base",
+          "basePrice": 24.00
+        },
+        {
+          "name": "Banana Peanut Butter Greek Protein",
+          "description": "Home Made Greek Yogurt Base",
+          "basePrice": 24.00
+        }
+      ]
+    },
+    {
+      "name": "Smoothie & Milk Shake",
+      "products": [
+        {
+          "name": "Mixed Berries Smoothie",
+          "description": "Prepared with Fresh Fruits",
+          "basePrice": 19.00
+        },
+        {
+          "name": "Pina Colada Smoothie",
+          "description": "Prepared with Fresh Fruits",
+          "basePrice": 19.00
+        },
+        {
+          "name": "Banana & Strawberry Smoothie",
+          "description": "Prepared with Fresh Fruits",
+          "basePrice": 19.00
+        },
+        {
+          "name": "Avocado & Banana Smoothie",
+          "description": "Prepared with Fresh Fruits",
+          "basePrice": 19.00
+        },
+        {
+          "name": "Banana Peanut Butter Smoothie",
+          "description": "Prepared with Fresh Fruits",
+          "basePrice": 19.00
+        },
+        {
+          "name": "Strawberry Milk Shake",
+          "description": "",
+          "basePrice": 17.00
+        },
+        {
+          "name": "Caramel Milk Shake",
+          "description": "",
+          "basePrice": 17.00
+        },
+        {
+          "name": "Chocolate Milk Shake",
+          "description": "",
+          "basePrice": 17.00
+        },
+        {
+          "name": "Vanilla Milk Shake",
+          "description": "",
+          "basePrice": 17.00
+        }
+      ]
+    },
+    {
+      "name": "Hot & Cold Drinks",
+      "products": [
+        {
+          "name": "American Coffee",
+          "description": "",
+          "basePrice": 6.00
+        },
+        {
+          "name": "Breakfast Tea",
+          "description": "",
+          "basePrice": 3.00
+        },
+        {
+          "name": "Iced Coffee",
+          "description": "",
+          "basePrice": 8.00
+        },
+        {
+          "name": "Iced Latte",
+          "description": "",
+          "basePrice": 10.00
+        },
+        {
+          "name": "Oreo Frappuccino",
+          "description": "",
+          "basePrice": 19.00
+        },
+        {
+          "name": "Lotus Frappuccino",
+          "description": "",
+          "basePrice": 19.00
+        },
+        {
+          "name": "Mocha Frappuccino Vanilla",
+          "description": "",
+          "basePrice": 18.00
+        },
+        {
+          "name": "Mocha Frappuccino Caramel",
+          "description": "",
+          "basePrice": 18.00
+        },
+        {
+          "name": "Mocha Frappuccino Chocolate",
+          "description": "",
+          "basePrice": 18.00
+        }
+      ]
+    }
+  ]
+}
